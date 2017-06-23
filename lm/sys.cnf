@@ -1,0 +1,7 @@
+database_host=68.15.71.77
+database_port=3306
+database_user=root
+database_password=root
+
+publisher_host=68.15.71.77
+publisher_port=4000
