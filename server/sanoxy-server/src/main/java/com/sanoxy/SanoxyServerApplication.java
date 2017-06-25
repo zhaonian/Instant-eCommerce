@@ -1,4 +1,4 @@
-package com.sanoxy.server;
+package com.sanoxy;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
