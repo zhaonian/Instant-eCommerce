@@ -9,12 +9,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.sanoxy.controller.response.Response.Status;
+import com.sanoxy.controller.response.UserId;
 import com.sanoxy.controller.service.exception.DuplicatedUserException;
 import com.sanoxy.controller.service.exception.InvalidRequestException;
+import com.sanoxy.controller.service.exception.UserNotExistException;
 import com.sanoxy.dao.user.User;
+import com.sanoxy.repository.user.UserRepository;
 import com.sanoxy.controller.request.user.CreateUserRequest;
+import com.sanoxy.controller.request.user.LogInRequest;
 import com.sanoxy.controller.response.Response;
-import com.sanoxy.repository.UserRepository;
 
 @Controller
 @RequestMapping(value = "api/user", produces = { MediaType.APPLICATION_JSON_VALUE })
@@ -36,4 +39,18 @@ public class UserController {
 		userRepository.save(user);
 		return new Response(Status.Success);
 	}
+	
+	@RequestMapping(value = { "/login", "" }, method = RequestMethod.POST)
+	@ResponseBody
+	public UserId logIn(@RequestBody LogInRequest request) throws InvalidRequestException, UserNotExistException {
+		if (!request.isValid()) {
+			throw new InvalidRequestException();
+		}
+		User user = userRepository.findByNameAndPassword(request.getUsername(), request.getPassword());
+		if (user == null) {
+			throw new UserNotExistException();
+		}
+		return new UserId(user);
+	}
+	
 }

@@ -1,9 +1,13 @@
 package com.sanoxy.dao.user;
 
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.GenericGenerator;
 
 
 @Entity
@@ -11,7 +15,9 @@ import javax.persistence.Table;
 public class User {
 	
 	@Id
-	private Integer id;
+	@GenericGenerator(name = "id-generator", strategy = "com.sanoxy.repository.ResourceIdGenerator")
+	@GeneratedValue(generator = "id-generator")
+	private String id;
 	@Column(nullable=false)
 	private Integer permission;
 	@Column(nullable=false)
@@ -19,10 +25,10 @@ public class User {
 	@Column(nullable=false)
 	private String salt;
 	
-	public Integer getId() {
+	public String getId() {
 		return id;
 	}
-	public void setId(Integer id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 	public Integer getPermission() {

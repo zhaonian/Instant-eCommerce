@@ -7,13 +7,12 @@ import com.sanoxy.dao.user.User;
 
 public class CreateUserRequest implements ValidatedRequest {
 	
-	private String userName;
+	private String username;
 	private String password;
 	
 	public User asUser() {
 		User user = new User();
-		user.setId(5);
-		user.setName(userName);
+		user.setName(username);
 		user.setPermission(1);
 		user.setSalt(password);
 		return user;
@@ -21,7 +20,7 @@ public class CreateUserRequest implements ValidatedRequest {
 	
 	@Override
 	public boolean isValid() throws InvalidRequestException {
-		if (userName == null || userName.isEmpty()) {
+		if (username == null || username.isEmpty()) {
 			throw new InvalidRequestException("user name is invalid");
 		}
 		if (password == null || password.isEmpty()) {
@@ -31,10 +30,10 @@ public class CreateUserRequest implements ValidatedRequest {
 	}
 	
 	public String getUserName() {
-		return userName;
+		return username;
 	}
 	public void setUserName(String userName) {
-		this.userName = userName;
+		this.username = userName;
 	}
 	public String getPassword() {
 		return password;
