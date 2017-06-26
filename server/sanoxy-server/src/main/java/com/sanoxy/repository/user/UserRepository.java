@@ -14,4 +14,9 @@ public interface UserRepository extends CrudRepository<User, Integer>{
 			+ "U.salt = (:password)")
 	public User findByNameAndPassword(@Param(value = "username") String userName,
 					       @Param(value = "password") String password);
+	
+	@Query("SELECT COUNT(U) = 1 FROM User U WHERE U.name = (:username) AND "
+			+ "U.id = (:id)")
+	public boolean existsByNameAndId(@Param(value = "username") String userName,
+					       @Param(value = "id") String id);
 }

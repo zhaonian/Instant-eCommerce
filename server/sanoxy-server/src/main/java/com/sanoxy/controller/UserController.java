@@ -17,6 +17,8 @@ import com.sanoxy.dao.user.User;
 import com.sanoxy.repository.user.UserRepository;
 import com.sanoxy.controller.request.user.CreateUserRequest;
 import com.sanoxy.controller.request.user.LogInRequest;
+import com.sanoxy.controller.request.user.LogoutRequest;
+import com.sanoxy.controller.response.DBName;
 import com.sanoxy.controller.response.Response;
 
 @Controller
@@ -26,6 +28,9 @@ public class UserController {
 	@Autowired
 	private UserRepository userRepository;
 
+	/*
+	 * Create a new user in the db
+	 */
 	@RequestMapping(value = { "/create", "" }, method = RequestMethod.POST)
 	@ResponseBody
 	public Response createUser(@RequestBody CreateUserRequest request) throws InvalidRequestException, DuplicatedUserException {
@@ -40,6 +45,9 @@ public class UserController {
 		return new Response(Status.Success);
 	}
 	
+	/*
+	 * Log the user in the session
+	 */
 	@RequestMapping(value = { "/login", "" }, method = RequestMethod.POST)
 	@ResponseBody
 	public UserId logIn(@RequestBody LogInRequest request) throws InvalidRequestException, UserNotExistException {
@@ -53,4 +61,27 @@ public class UserController {
 		return new UserId(user);
 	}
 	
+	/*
+	 * Log the user out of the session
+	 */
+	@RequestMapping(value = { "/logout", "" }, method = RequestMethod.POST)
+	@ResponseBody
+	public Response logout(@RequestBody LogoutRequest request) throws InvalidRequestException {
+		if (!request.isValid()) {
+			throw new InvalidRequestException();
+		}
+//		boolean user = userRepository.existsByNameAndId(request.getUsername(), request.getId());
+		// session
+		return new Response(Status.Success);
+	}
+	
+	/*
+	 * Return sanoxy directly for now
+	 * TODO: Each user will have its own database in the future
+	 */
+	@RequestMapping(value = { "/validate_connection", "" }, method = RequestMethod.POST)
+	@ResponseBody
+	public DBName validateConnection() {
+		return new DBName("sanoxy");
+	}
 }
