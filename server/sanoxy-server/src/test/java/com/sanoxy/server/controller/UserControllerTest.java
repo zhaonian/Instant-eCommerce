@@ -110,7 +110,7 @@ public class UserControllerTest extends ControllerTest {
 
         @Test
         public void validateConnectionTest() throws Exception {
-                mockMvc.perform(get("/api/user/validate_connection"))
+                mockMvc.perform(get("/api/user/connection"))
                         .andExpect(jsonPath("$.dbName", is("sanoxy")));
         }
 }

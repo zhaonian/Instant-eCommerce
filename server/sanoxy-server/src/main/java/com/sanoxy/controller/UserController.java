@@ -80,7 +80,7 @@ public class UserController {
 	 * Return sanoxy directly for now
 	 * TODO: Each user will have its own database in the future
          */
-        @RequestMapping(value = {"/validate_connection", ""}, method = RequestMethod.GET)
+        @RequestMapping(value = {"/connection", ""}, method = RequestMethod.GET)
         @ResponseBody
         public DBName validateConnection() {
                 return new DBName("sanoxy");
