@@ -5,10 +5,11 @@
  */
 package com.sanoxy.dao.user.inventory;
 
+
 /**
  *
  * @author luan
  */
-public class Inventory {
-        
-}
+//public class Inventory {
+//        
+//}
