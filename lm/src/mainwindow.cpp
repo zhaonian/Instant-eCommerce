@@ -3,16 +3,22 @@
 
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
-        ui(new Ui::MainWindow)
+        m_ui(new Ui::MainWindow)
 {
-        ui->setupUi(this);
+        m_ui->setupUi(this);
 
-        ui->statusBar->showMessage("Welcome.");
+        m_ui->statusBar->showMessage("Welcome.");
 }
 
 MainWindow::~MainWindow()
 {
-        delete ui;
+        delete m_ui;
+}
+
+void
+MainWindow::set_identity(core::identity const& identity)
+{
+        m_identity = identity;
 }
 
 

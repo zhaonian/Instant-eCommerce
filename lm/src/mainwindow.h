@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "auth.h"
 
 namespace Ui {
 class MainWindow;
@@ -14,6 +15,8 @@ class MainWindow : public QMainWindow
 public:
         explicit MainWindow(QWidget *parent = 0);
         ~MainWindow();
+
+        void    set_identity(core::identity const& identity);
 
 private slots:
         void on_import_master_listings_triggered();
@@ -37,7 +40,8 @@ private slots:
         void on_commit_triggered();
 
 private:
-        Ui::MainWindow *ui;
+        Ui::MainWindow* m_ui;
+        core::identity  m_identity;
 };
 
 #endif // MAINWINDOW_H
