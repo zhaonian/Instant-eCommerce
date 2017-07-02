@@ -7,6 +7,16 @@ public class LogInRequest implements ValidatedRequest {
 	
 	private String username;
 	private String password;
+        
+        public LogInRequest()
+        {
+        }
+        
+        public LogInRequest(String username, String password)
+        {
+                this.username = username;
+                this.password = password;
+        }
 	
 	@Override
 	public boolean isValid() throws InvalidRequestException {

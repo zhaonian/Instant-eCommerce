@@ -4,9 +4,9 @@ import com.sanoxy.controller.request.user.CreateUserRequest;
 import com.sanoxy.controller.request.user.LogInRequest;
 import com.sanoxy.controller.request.user.LogoutRequest;
 import com.sanoxy.controller.response.DBName;
+import com.sanoxy.controller.response.Identity;
 import com.sanoxy.controller.response.Response;
 import com.sanoxy.controller.response.Response.Status;
-import com.sanoxy.controller.response.UserId;
 import com.sanoxy.controller.service.exception.DuplicatedUserException;
 import com.sanoxy.controller.service.exception.InvalidRequestException;
 import com.sanoxy.controller.service.exception.UserNotExistException;
@@ -34,16 +34,16 @@ public class UserController {
          */
         @RequestMapping(value = {"/create", ""}, method = RequestMethod.POST)
         @ResponseBody
-        public Response createUser(@RequestBody CreateUserRequest request) throws InvalidRequestException, DuplicatedUserException {
+        public Identity createUser(@RequestBody CreateUserRequest request) throws InvalidRequestException, DuplicatedUserException, UserNotExistException {
                 if (!request.isValid()) {
                         throw new InvalidRequestException();
                 }
-                if (userRepository.existsByName(request.getUserName())) {
+                if (userRepository.existsByName(request.getUsername())) {
                         throw new DuplicatedUserException();
                 }
                 User user = request.asUser();
                 userRepository.save(user);
-                return new Response(Status.Success);
+                return logIn(new LogInRequest(request.getUsername(), request.getPassword()));
         }
 
         /*
@@ -51,7 +51,7 @@ public class UserController {
          */
         @RequestMapping(value = {"/login", ""}, method = RequestMethod.POST)
         @ResponseBody
-        public UserId logIn(@RequestBody LogInRequest request) throws InvalidRequestException, UserNotExistException {
+        public Identity logIn(@RequestBody LogInRequest request) throws InvalidRequestException, UserNotExistException {
                 if (!request.isValid()) {
                         throw new InvalidRequestException();
                 }
@@ -59,8 +59,9 @@ public class UserController {
                 if (user == null) {
                         throw new UserNotExistException();
                 }
-                Session.setUser(user.getId(), user);
-                return new UserId(user);
+                Identity id = new Identity(true);
+                Session.setUser(id.getId(), user);
+                return id;
         }
 
         /*
