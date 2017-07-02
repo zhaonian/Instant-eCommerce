@@ -3,7 +3,8 @@
 
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
-        m_ui(new Ui::MainWindow)
+        m_ui(new Ui::MainWindow),
+        m_identity("Null", 0)
 {
         m_ui->setupUi(this);
 

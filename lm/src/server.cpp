@@ -27,11 +27,14 @@ json_request_detail(std::string const& host, std::string const& path, std::strin
         ss << "Accept: application/json" << "\r\n";
         ss << "Content-Type: application/json" << "\r\n";
         ss << "Connection: close\r\n";
-        ss << "\r\n";
 
         std::ostringstream oss;
-        boost::property_tree::json_parser::write_json(oss, json);
-        ss << oss.str() << "\r\n";
+        boost::property_tree::json_parser::write_json(oss, json, false);
+        std::string const& s = oss.str();
+        ss << "Content-Length: " << s.length() << "\r\n";
+
+        ss << "\r\n";
+        ss << s << "\r\n";
         ss << "\r\n";
 
         return ss.str();
@@ -79,7 +82,7 @@ parse_json_response(core::json_t& json, std::string const& response, std::string
         // extract error code.
         std::vector<std::string> const& lines = util::split(response, '\n');
         std::vector<std::string> const& request_fields = util::split(lines[0], ' ');
-        if (request_fields[1] != "200") {
+        if (request_fields[1] != "200" && request_fields[1] != "500") {
                 error = request_fields[1];
                 return false;
         }
@@ -133,6 +136,12 @@ bool
 core::central_server::is_connected() const
 {
         return m_is_connected;
+}
+
+std::string
+core::central_server::error() const
+{
+        return m_error;
 }
 
 bool

@@ -18,6 +18,8 @@ initialize_login_window_with_defaults(Ui::LoginWindow* ui)
 
         if (config->get_login_user_name().empty()) {
                 ui->tabWidget->setCurrentIndex(1);
+        } else {
+                ui->tabWidget->setCurrentIndex(0);
         }
 }
 
@@ -77,7 +79,7 @@ LoginWindow::on_login_button_clicked()
                 m_main_window->showMaximized();
                 this->close();
         } else {
-                m_ui->statusbar->showMessage("Account information is invalid.");
+                m_ui->statusbar->showMessage(identity.error().c_str());
         }
 }
 
@@ -99,6 +101,6 @@ LoginWindow::on_signup_button_clicked()
                 m_ui->login_password->setText(m_ui->signup_password->text());
                 m_ui->tabWidget->setCurrentIndex(0);
         } else {
-                m_ui->statusbar->showMessage("This account has already existed or the information is invalid.");
+                m_ui->statusbar->showMessage(identity.error().c_str());
         }
 }
