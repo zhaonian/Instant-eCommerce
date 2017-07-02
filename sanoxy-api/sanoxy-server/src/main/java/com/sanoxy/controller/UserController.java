@@ -1,13 +1,10 @@
 package com.sanoxy.controller;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-
+import com.sanoxy.controller.request.user.CreateUserRequest;
+import com.sanoxy.controller.request.user.LogInRequest;
+import com.sanoxy.controller.request.user.LogoutRequest;
+import com.sanoxy.controller.response.DBName;
+import com.sanoxy.controller.response.Response;
 import com.sanoxy.controller.response.Response.Status;
 import com.sanoxy.controller.response.UserId;
 import com.sanoxy.controller.service.exception.DuplicatedUserException;
@@ -15,12 +12,15 @@ import com.sanoxy.controller.service.exception.InvalidRequestException;
 import com.sanoxy.controller.service.exception.UserNotExistException;
 import com.sanoxy.dao.user.User;
 import com.sanoxy.repository.user.UserRepository;
-import com.sanoxy.controller.request.user.CreateUserRequest;
-import com.sanoxy.controller.request.user.LogInRequest;
-import com.sanoxy.controller.request.user.LogoutRequest;
-import com.sanoxy.controller.response.DBName;
-import com.sanoxy.controller.response.Response;
 import com.sanoxy.service.Session;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping(value = "api/user", produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -80,9 +80,9 @@ public class UserController {
 	 * Return sanoxy directly for now
 	 * TODO: Each user will have its own database in the future
          */
-        @RequestMapping(value = {"/connection", ""}, method = RequestMethod.GET)
+        @RequestMapping(value = {"/connection/{db_name}", ""}, method = RequestMethod.GET)
         @ResponseBody
-        public DBName validateConnection() {
-                return new DBName("sanoxy");
+        public DBName validateConnection(@PathVariable("db_name") String db_name) {
+                return new DBName(db_name);
         }
 }
