@@ -124,7 +124,7 @@ core::central_server::connect(std::string const& db_name, std::string const& hos
         m_host_name = host_name;
         m_port = port;
 
-        send_json_request(m_connection, "/api/user/connection", request_type::get, json_t());
+        send_json_request(m_connection, "/api/user/connection/" + db_name, request_type::get, json_t());
         m_is_connected = m_error.empty();
         return m_is_connected;
 }

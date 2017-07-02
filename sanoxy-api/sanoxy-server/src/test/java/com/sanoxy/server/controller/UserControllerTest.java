@@ -16,7 +16,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,7 +109,7 @@ public class UserControllerTest extends ControllerTest {
 
         @Test
         public void validateConnectionTest() throws Exception {
-                mockMvc.perform(get("/api/user/connection"))
+                mockMvc.perform(get("/api/user/connection/sanoxy"))
                         .andExpect(jsonPath("$.dbName", is("sanoxy")));
         }
 }
