@@ -13,6 +13,7 @@ import com.sanoxy.controller.service.exception.UserNotExistException;
 import com.sanoxy.dao.user.User;
 import com.sanoxy.repository.user.UserRepository;
 import com.sanoxy.service.Session;
+import javax.naming.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -34,7 +35,7 @@ public class UserController {
          */
         @RequestMapping(value = {"/create", ""}, method = RequestMethod.POST)
         @ResponseBody
-        public Identity createUser(@RequestBody CreateUserRequest request) throws InvalidRequestException, DuplicatedUserException, UserNotExistException {
+        public Identity createUser(@RequestBody CreateUserRequest request) throws InvalidRequestException, DuplicatedUserException, UserNotExistException, AuthenticationException {
                 if (!request.isValid()) {
                         throw new InvalidRequestException();
                 }
@@ -51,13 +52,16 @@ public class UserController {
          */
         @RequestMapping(value = {"/login", ""}, method = RequestMethod.POST)
         @ResponseBody
-        public Identity logIn(@RequestBody LogInRequest request) throws InvalidRequestException, UserNotExistException {
+        public Identity logIn(@RequestBody LogInRequest request) throws InvalidRequestException, UserNotExistException, AuthenticationException {
                 if (!request.isValid()) {
                         throw new InvalidRequestException();
                 }
-                User user = userRepository.findByNameAndPassword(request.getUsername(), request.getPassword());
+                User user = userRepository.findByName(request.getUsername());
                 if (user == null) {
                         throw new UserNotExistException();
+                }
+                if (!user.getSalt().equals(request.getPassword())) {
+                        throw new AuthenticationException("Password does not match");
                 }
                 Identity id = new Identity(true);
                 Session.setUser(id.getId(), user);
