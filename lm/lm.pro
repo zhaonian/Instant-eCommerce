@@ -24,7 +24,8 @@ SOURCES += src/main.cpp\
     src/inventorysingleselection.cpp \
     src/inventorymultipleselection.cpp \
     src/inventorytracking.cpp \
-    src/inventoryinfo.cpp
+    src/inventoryinfo.cpp \
+    src/localdb.cpp
 
 HEADERS  += src/mainwindow.h \
     src/loginwindow.h \
@@ -38,7 +39,8 @@ HEADERS  += src/mainwindow.h \
     src/inventorysingleselection.h \
     src/inventorymultipleselection.h \
     src/inventorytracking.h \
-    src/inventoryinfo.h
+    src/inventoryinfo.h \
+    src/localdb.h
 
 LIBS += -lboost_system
 LIBS += -lcurl

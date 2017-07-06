@@ -5,18 +5,17 @@
 
 
 static void
-update_inventory_container(QTreeWidget* browser, QTreeWidgetItem** container, std::string const& db_name)
+update_inventory_container(QTreeWidget* browser, QTreeWidgetItem** container, core::localdb& localdb)
 {
         delete *container;
         *container = new QTreeWidgetItem(browser);
-        (*container)->setText(0, db_name.c_str());
+        (*container)->setText(0, localdb.connection_name().c_str());
         browser->insertTopLevelItem(0, *container);
 }
 
 MainWindow::MainWindow(QWidget *parent) :
         QMainWindow(parent),
-        m_ui(new Ui::MainWindow),
-        m_identity("Null")
+        m_ui(new Ui::MainWindow)
 {
         m_ui->setupUi(this);
 
@@ -31,16 +30,12 @@ MainWindow::~MainWindow()
 void
 MainWindow::make_connection(core::identity const& identity)
 {
-        m_identity = identity;
+        delete m_localdb;
+        m_localdb = new core::localdb(*core::get_central_server(), identity);
 
-        core::central_server* server = core::get_central_server();
+        update_inventory_container(m_ui->inventory_browser, &m_inventory_container, *m_localdb);
 
-        std::string const& user_name = identity.user_name();
-        std::string const& db_name = server->connection_name();
-
-        update_inventory_container(m_ui->inventory_browser, &m_inventory_container, db_name);
-
-        m_ui->statusBar->showMessage(("Welcome " + user_name + ". You have connected to the database " + db_name).c_str());
+        m_ui->statusBar->showMessage(("Welcome " + m_localdb->user_name() + ". You have connected to the database " + m_localdb->connection_name()).c_str());
 }
 
 

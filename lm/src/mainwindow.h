@@ -6,6 +6,7 @@
 
 #include <QMainWindow>
 #include <QTreeWidget>
+#include "localdb.h"
 #include "noselection.h"
 #include "inventorycreation.h"
 #include "inventorysingleselection.h"
@@ -50,11 +51,11 @@ private slots:
 
 private:
         Ui::MainWindow*                 m_ui;
+        core::localdb*                  m_localdb = nullptr;
         NoSelection                     m_no_selection;
         InventoryCreation               m_creation;
         InventorySingleSelection        m_single_selection;
         InventoryMultipleSelection      m_multiple_selection;
-        core::identity                  m_identity;
 
         QTreeWidgetItem*                m_inventory_container = nullptr;
 };
