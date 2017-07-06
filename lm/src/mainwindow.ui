@@ -10,6 +10,9 @@
     <height>714</height>
    </rect>
   </property>
+  <property name="focusPolicy">
+   <enum>Qt::TabFocus</enum>
+  </property>
   <property name="windowTitle">
    <string>Sanoxy</string>
   </property>
@@ -91,6 +94,7 @@ QWidget:disabled
 QAbstractItemView
 {
     background-color: QLinearGradient( x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #4d4d4d, stop: 0.1 #646464, stop: 1 #5d5d5d);
+    /*background-color: darkgray;*/
 }
 
 QWidget:focus
@@ -304,6 +308,8 @@ QDockWidget::title
 {
     text-align: center;
     spacing: 3px; /* spacing between items in the tool bar */
+  	padding-top: 5px;
+  	padding-bottom: 5px;
     background-color: QLinearGradient(x1:0, y1:0, x2:0, y2:1, stop:0 #323232, stop: 0.5 #242424, stop:1 #323232);
 }
 
@@ -475,33 +481,7 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
 }</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_2">
-    <item>
-     <widget class="QTabWidget" name="tabWidget">
-      <property name="styleSheet">
-       <string notr="true"/>
-      </property>
-      <property name="currentIndex">
-       <number>0</number>
-      </property>
-      <widget class="QWidget" name="inventory_info">
-       <attribute name="title">
-        <string>Inventory Info</string>
-       </attribute>
-      </widget>
-      <widget class="QWidget" name="tracking">
-       <attribute name="title">
-        <string>Tracking</string>
-       </attribute>
-      </widget>
-      <widget class="QWidget" name="statistics">
-       <attribute name="title">
-        <string>Statistics</string>
-       </attribute>
-      </widget>
-     </widget>
-    </item>
-   </layout>
+   <layout class="QHBoxLayout" name="main_window_layout"/>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
@@ -557,8 +537,8 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
   <widget class="QDockWidget" name="dockWidget">
    <property name="font">
     <font>
-     <family>Ubuntu Mono</family>
-     <pointsize>12</pointsize>
+     <family>Umpush</family>
+     <pointsize>11</pointsize>
     </font>
    </property>
    <property name="windowTitle">
@@ -570,10 +550,23 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
    <widget class="QWidget" name="dockWidgetContents_2">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QLineEdit" name="search_box"/>
+      <widget class="QLineEdit" name="search_box">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+      </widget>
      </item>
      <item>
-      <widget class="QTreeView" name="inventory_view"/>
+      <widget class="QTreeWidget" name="inventory_browser">
+       <column>
+        <property name="text">
+         <string>Inventory Browser</string>
+        </property>
+       </column>
+      </widget>
      </item>
     </layout>
    </widget>

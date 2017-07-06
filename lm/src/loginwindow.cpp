@@ -26,6 +26,7 @@ initialize_login_window_with_defaults(Ui::LoginWindow* ui)
 static void
 connect_to_central_server(Ui::LoginWindow* ui)
 {
+        ui->statusbar->showMessage("Connecting...");
         if (core::get_central_server()->connect("sanoxy", ui->hostname->text().toStdString(),
                                                 std::stoi(ui->portnumber->text().toStdString()))) {
                 ui->statusbar->showMessage("Connected to the central server.");
@@ -70,12 +71,13 @@ LoginWindow::~LoginWindow()
 void
 LoginWindow::on_login_button_clicked()
 {
+        m_ui->statusbar->showMessage("Logging in...");
         core::identity identity = core::auth(*core::get_central_server(),
                                              m_ui->login_username->text().toStdString(),
                                              m_ui->login_password->text().toStdString());
         if (identity.is_valid()) {
                 save_login_form(m_ui);
-                m_main_window->set_identity(identity);
+                m_main_window->make_connection(identity);
                 m_main_window->showMaximized();
                 this->close();
         } else {
@@ -92,6 +94,7 @@ LoginWindow::on_connect2server_clicked()
 void
 LoginWindow::on_signup_button_clicked()
 {
+        m_ui->statusbar->showMessage("Creating account...");
         core::identity identity = core::auth_create(*core::get_central_server(),
                                                     m_ui->signup_username->text().toStdString(),
                                                     m_ui->signup_password->text().toStdString());

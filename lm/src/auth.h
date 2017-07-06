@@ -9,14 +9,16 @@ namespace core
 class identity
 {
 public:
-        identity(std::string const& error, unsigned code);
-        identity(std::string const& iid);
+        identity(std::string const& error);
+        identity(std::string const& user_name, std::string const& iid);
 
         std::string     iid() const;
         bool            is_valid() const;
+        std::string     user_name() const;
         std::string     error() const;
 private:
         std::string     m_error;
+        std::string     m_user_name;
         std::string     m_iid;
 };
 

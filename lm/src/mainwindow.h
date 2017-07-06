@@ -1,8 +1,17 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
+
 #include "auth.h"
+
+#include <QMainWindow>
+#include <QTreeWidget>
+#include "noselection.h"
+#include "inventorycreation.h"
+#include "inventorysingleselection.h"
+#include "inventorymultipleselection.h"
+#include "inventorytracking.h"
+
 
 namespace Ui {
 class MainWindow;
@@ -16,7 +25,7 @@ public:
         explicit MainWindow(QWidget *parent = 0);
         ~MainWindow();
 
-        void    set_identity(core::identity const& identity);
+        void    make_connection(core::identity const& identity);
 
 private slots:
         void on_import_master_listings_triggered();
@@ -40,8 +49,14 @@ private slots:
         void on_commit_triggered();
 
 private:
-        Ui::MainWindow* m_ui;
-        core::identity  m_identity;
+        Ui::MainWindow*                 m_ui;
+        NoSelection                     m_no_selection;
+        InventoryCreation               m_creation;
+        InventorySingleSelection        m_single_selection;
+        InventoryMultipleSelection      m_multiple_selection;
+        core::identity                  m_identity;
+
+        QTreeWidgetItem*                m_inventory_container = nullptr;
 };
 
 #endif // MAINWINDOW_H

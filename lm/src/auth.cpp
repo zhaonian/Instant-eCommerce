@@ -4,13 +4,13 @@
 #include "auth.h"
 
 
-core::identity::identity(std::string const& error, unsigned):
+core::identity::identity(std::string const& error):
         m_error(error)
 {
 }
 
-core::identity::identity(std::string const& iid):
-        m_iid(iid)
+core::identity::identity(std::string const& user_name, std::string const& iid):
+        m_user_name(user_name), m_iid(iid)
 {
 }
 
@@ -27,6 +27,12 @@ core::identity::is_valid() const
 }
 
 std::string
+core::identity::user_name() const
+{
+        return m_user_name;
+}
+
+std::string
 core::identity::error() const
 {
         return m_error;
@@ -40,14 +46,13 @@ core::auth(central_server& server, std::string const& name, std::string const& p
         user_info.put<std::string>("username", name);
         user_info.put<std::string>("password", password);
         if (!server.send_json_request(result, "/api/user/login", request_type::post, user_info)) {
-                return identity(server.error(), 0);
+                return identity(server.error());
         }
 
         try {
-                std::string const& message = result.get<std::string>("message");
-                return identity(message, 0);
+                return identity(result.get<std::string>("message"));
         } catch (...) {
-                return identity(result.get<std::string>("id"));
+                return identity(name, result.get<std::string>("id"));
         }
 }
 
@@ -60,10 +65,9 @@ core::auth_create(central_server& server, std::string const& name, std::string c
         server.send_json_request(result, "/api/user/create", request_type::post, user_info);
 
         try {
-                std::string const& message = result.get<std::string>("message");
-                return identity(message, 0);
+                return identity(result.get<std::string>("message"));
         } catch (...) {
-                return identity(result.get<std::string>("id"));
+                return identity(name, result.get<std::string>("id"));
         }
 }
 

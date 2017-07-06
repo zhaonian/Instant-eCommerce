@@ -138,17 +138,23 @@ core::central_server::is_connected() const
         return m_is_connected;
 }
 
+bool
+core::central_server::send_json_request(json_t& data, std::string const& path, request_type type, json_t const& json)
+{
+        std::string response = ::send_json_request(m_host_name, m_port, path, type == request_type::get ? "GET" : "POST", json);
+        return parse_json_response(data, response, m_error);
+}
+
 std::string
 core::central_server::error() const
 {
         return m_error;
 }
 
-bool
-core::central_server::send_json_request(json_t& data, std::string const& path, request_type type, json_t const& json)
+std::string
+core::central_server::connection_name() const
 {
-        std::string response = ::send_json_request(m_host_name, m_port, path, type == request_type::get ? "GET" : "POST", json);
-        return parse_json_response(data, response, m_error);
+        return m_connection.get<std::string>("dbName");
 }
 
 
