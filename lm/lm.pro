@@ -44,6 +44,7 @@ HEADERS  += src/mainwindow.h \
 
 LIBS += -lboost_system
 LIBS += -lcurl
+LIBS += -pthread
 
 FORMS    += src/mainwindow.ui \
     src/loginwindow.ui \

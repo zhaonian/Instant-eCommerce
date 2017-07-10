@@ -498,26 +498,31 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
     </property>
     <widget class="QMenu" name="menuImport">
      <property name="title">
-      <string>Import</string>
+      <string>Import Data</string>
      </property>
      <addaction name="import_master_listings"/>
      <addaction name="import_system_backup"/>
     </widget>
     <widget class="QMenu" name="menuExport">
      <property name="title">
-      <string>export</string>
+      <string>Export Data</string>
      </property>
      <addaction name="export_system_backup"/>
     </widget>
+    <addaction name="actionCreate_New_Database"/>
+    <addaction name="actionOpen_Database"/>
+    <addaction name="actionDelete_Database"/>
+    <addaction name="separator"/>
     <addaction name="menuImport"/>
     <addaction name="menuExport"/>
+    <addaction name="separator"/>
+    <addaction name="actionPreferences"/>
+    <addaction name="actionExit"/>
    </widget>
    <widget class="QMenu" name="menuTools">
     <property name="title">
-     <string>Tools</string>
+     <string>Data</string>
     </property>
-    <addaction name="open_account_manager"/>
-    <addaction name="open_server_connection"/>
     <addaction name="commit"/>
     <addaction name="revert_to_last_commit"/>
     <addaction name="open_history"/>
@@ -527,10 +532,31 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
     <property name="title">
      <string>Help</string>
     </property>
+    <addaction name="actionServer_Connection"/>
+    <addaction name="separator"/>
     <addaction name="help_about"/>
    </widget>
+   <widget class="QMenu" name="menuAccount_Manager">
+    <property name="title">
+     <string>Accounts</string>
+    </property>
+    <addaction name="actionCreate_Account"/>
+    <addaction name="actionLogout"/>
+    <addaction name="separator"/>
+    <addaction name="actionManage_Other_Account"/>
+   </widget>
+   <widget class="QMenu" name="menuTools_2">
+    <property name="title">
+     <string>Tools</string>
+    </property>
+    <addaction name="actionPrint_Barcode"/>
+    <addaction name="actionPrint_Shipping_Label"/>
+    <addaction name="actionPrint_statistics"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuAccount_Manager"/>
    <addaction name="menuTools"/>
+   <addaction name="menuTools_2"/>
    <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -550,22 +576,25 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
    <widget class="QWidget" name="dockWidgetContents_2">
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
+      <widget class="QTreeWidget" name="inventory_browser">
+       <column>
+        <property name="text">
+         <string>Database View</string>
+        </property>
+       </column>
+      </widget>
+     </item>
+     <item>
       <widget class="QLineEdit" name="search_box">
        <property name="enabled">
         <bool>true</bool>
        </property>
        <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
+        <enum>Qt::ClickFocus</enum>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QTreeWidget" name="inventory_browser">
-       <column>
-        <property name="text">
-         <string>Inventory Browser</string>
-        </property>
-       </column>
+       <property name="text">
+        <string>Search for...</string>
+       </property>
       </widget>
      </item>
     </layout>
@@ -578,7 +607,7 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
   </action>
   <action name="import_master_listings">
    <property name="text">
-    <string>Master Listings</string>
+    <string>Master Excel</string>
    </property>
   </action>
   <action name="import_system_backup">
@@ -619,6 +648,66 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
   <action name="commit">
    <property name="text">
     <string>Commit to Database</string>
+   </property>
+  </action>
+  <action name="actionServer_Connection">
+   <property name="text">
+    <string>Server Connection</string>
+   </property>
+  </action>
+  <action name="actionCreate_Account">
+   <property name="text">
+    <string>My Account</string>
+   </property>
+  </action>
+  <action name="actionLogout">
+   <property name="text">
+    <string>Logout</string>
+   </property>
+  </action>
+  <action name="actionManage_Other_Account">
+   <property name="text">
+    <string>Open Account Manager</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionCreate_New_Database">
+   <property name="text">
+    <string>Create New Database</string>
+   </property>
+  </action>
+  <action name="actionPreferences">
+   <property name="text">
+    <string>Preferences</string>
+   </property>
+  </action>
+  <action name="actionOpen_Database">
+   <property name="text">
+    <string>Open Database</string>
+   </property>
+  </action>
+  <action name="actionDelete_Database">
+   <property name="text">
+    <string>Delete Current Database</string>
+   </property>
+  </action>
+  <action name="actionPrint_Barcode">
+   <property name="text">
+    <string>Print Barcode</string>
+   </property>
+  </action>
+  <action name="actionPrint_Shipping_Label">
+   <property name="text">
+    <string>Print Shipping Label</string>
+   </property>
+  </action>
+  <action name="actionPrint_statistics">
+   <property name="text">
+    <string>Print Statistics</string>
    </property>
   </action>
  </widget>

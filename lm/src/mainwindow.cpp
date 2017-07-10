@@ -5,12 +5,27 @@
 
 
 static void
+update_category(QTreeWidgetItem* container, core::localdb localdb)
+{
+        std::string error;
+        std::vector<core::inventory_category> const& category = localdb.get_inventory_categories(error);
+        if (category.empty()) {
+                QTreeWidgetItem* empty = new QTreeWidgetItem(container);
+                empty->setText(0, error.empty() ? "You haven't got any categories yet." : error.c_str());
+                container->addChild(empty);
+        } else {
+        }
+}
+
+static void
 update_inventory_container(QTreeWidget* browser, QTreeWidgetItem** container, core::localdb& localdb)
 {
         delete *container;
         *container = new QTreeWidgetItem(browser);
         (*container)->setText(0, localdb.connection_name().c_str());
         browser->insertTopLevelItem(0, *container);
+
+        update_category(*container, localdb);
 }
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -35,7 +50,8 @@ MainWindow::make_connection(core::identity const& identity)
 
         update_inventory_container(m_ui->inventory_browser, &m_inventory_container, *m_localdb);
 
-        m_ui->statusBar->showMessage(("Welcome " + m_localdb->user_name() + ". You have connected to the database " + m_localdb->connection_name()).c_str());
+        m_ui->statusBar->showMessage(("Welcome " + m_localdb->user_name()
+                                      + " (you have connected to the database " + m_localdb->connection_name() + ").").c_str());
 }
 
 

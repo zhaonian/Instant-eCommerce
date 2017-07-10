@@ -33,7 +33,9 @@ public:
 class warehouse_item
 {
 public:
-        warehouse_item(unsigned wh_item_id, std::string const& sku);
+        warehouse_item(unsigned wh_item_id,
+                       std::string const& sku,
+                       unsigned quantity);
 private:
         unsigned        m_sku;
         unsigned        m_wh_item_id;
@@ -43,7 +45,8 @@ private:
 class listed_inventory
 {
 public:
-        listed_inventory();
+        listed_inventory(unsigned wh_item_id,
+                         float our_price);
 private:
         unsigned        m_wh_item_id;
         float           m_our_price;

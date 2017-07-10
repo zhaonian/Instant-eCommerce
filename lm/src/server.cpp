@@ -1,4 +1,6 @@
 #include <boost/asio.hpp>
+#include <boost/lambda/bind.hpp>
+#include <boost/lambda/lambda.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 #include <iostream>
@@ -8,14 +10,48 @@
 
 
 static void
-connect(boost::asio::ip::tcp::socket& sock, std::string const& host, unsigned port, std::string& error)
+connect(boost::asio::ip::tcp::socket& sock, boost::asio::io_service& service, std::string const& host, unsigned port, std::string& error)
 {
-        try {
-                sock.connect(boost::asio::ip::tcp::endpoint(boost::asio::ip::address_v4::from_string(host), port));
+        // Resolve the host name and service to a list of endpoints.
+        boost::asio::ip::tcp::resolver::query query(host, std::to_string(port));
+        boost::asio::ip::tcp::resolver::iterator iter = boost::asio::ip::tcp::resolver(service).resolve(query);
+
+        // Set a deadline for the asynchronous operation. As a host name may
+        // resolve to multiple endpoints, this function uses the composed operation
+        // async_connect. The deadline applies to the entire operation, rather than
+        // individual connection attempts.
+        boost::asio::deadline_timer deadline(service);
+        boost::posix_time::time_duration timeout(0, 0, 5);
+        deadline.expires_at(boost::posix_time::pos_infin);
+        deadline.expires_from_now(timeout);
+
+        // Set up the variable that receives the result of the asynchronous
+        // operation. The error code is set to would_block to signal that the
+        // operation is incomplete. Asio guarantees that its asynchronous
+        // operations will never fail with would_block, so any other value in
+        // ec indicates completion.
+        boost::system::error_code ec = boost::asio::error::would_block;
+
+        // Start the asynchronous operation itself. The boost::lambda function
+        // object is used as a callback and will update the ec variable when the
+        // operation completes. The blocking_udp_client.cpp example shows how you
+        // can use boost::bind rather than boost::lambda.
+        boost::asio::async_connect(sock, iter, boost::lambda::var(ec) = boost::lambda::_1);
+
+        // Block until the asynchronous operation has completed.
+        do {
+                service.run_one();
+        } while (ec == boost::asio::error::would_block);
+
+        // Determine whether a connection was successfully established. The
+        // deadline actor may have had a chance to run and close our socket, even
+        // though the connect operation notionally succeeded. Therefore we must
+        // check whether the socket is still open before deciding if we succeeded
+        // or failed.
+        if (ec || !sock.is_open())
+                error = boost::system::system_error(ec ? ec : boost::asio::error::operation_aborted).what();
+        else
                 error.clear();
-        } catch (boost::system::system_error const& e) {
-                error = e.what();
-        }
 }
 
 static std::string
@@ -48,7 +84,7 @@ send_json_request(std::string const& host, unsigned port, std::string const& pat
         boost::asio::ip::tcp::socket sock(service);
 
         std::string error;
-        connect(sock, host, port, error);
+        connect(sock, service, host, port, error);
         if (!error.empty()) {
                 return "HTTP/1.1 502\r\n";
         }
