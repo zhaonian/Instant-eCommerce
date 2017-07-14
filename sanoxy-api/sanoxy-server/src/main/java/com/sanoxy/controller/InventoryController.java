@@ -5,6 +5,7 @@
  */
 package com.sanoxy.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sanoxy.controller.request.inventory.AddCategoryRequest;
 import com.sanoxy.controller.request.inventory.AddInventoryRequest;
 import com.sanoxy.controller.response.Response;
@@ -91,7 +92,7 @@ public class InventoryController {
         @RequestMapping(value = {"/inventory/add/{categoryId}", ""}, method = RequestMethod.POST)
         @ResponseBody
         public Response addInventory(@PathVariable("categoryId") Integer categoryId, @RequestBody AddInventoryRequest request) 
-                throws InvalidRequestException, ResourceMissingException {
+                throws InvalidRequestException, ResourceMissingException, JsonProcessingException {
                 if (!request.isValid()) {
                         throw new InvalidRequestException();
                 }
@@ -99,7 +100,7 @@ public class InventoryController {
                 if (inventoryCategory == null) {
                         throw new ResourceMissingException("Category does not exist");
                 }
-                Inventory inventory = request.asInventory();
+                Inventory inventory = request.asInventory(inventoryCategory);
                 inventory.setInventoryCategory(inventoryCategory);
                 inventoryRepository.save(inventory);
 
