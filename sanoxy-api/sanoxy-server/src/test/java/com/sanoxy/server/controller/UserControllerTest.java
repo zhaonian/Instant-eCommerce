@@ -70,7 +70,6 @@ public class UserControllerTest extends ControllerTest {
                         .content(json(logInRequest))
                         .contentType(MEDIA_TYPE))
                         .andExpect(status().isOk())
-                        //.andExpect(content().json(json(user)))
                         .andReturn();
                 
                 return responseToIdentity(result);

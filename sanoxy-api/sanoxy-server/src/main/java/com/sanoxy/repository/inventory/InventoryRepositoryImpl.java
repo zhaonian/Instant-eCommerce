@@ -37,7 +37,7 @@ public class InventoryRepositoryImpl implements InventoryRepositoryFulltext {
                 org.apache.lucene.search.Query query =
                     queryBuilder
                       .keyword()
-                      .onFields("title", "brand", "description")
+                      .onFields("title", "brand", "description", "keyword")
                       .matching(keyword)
                       .createQuery();
 

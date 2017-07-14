@@ -49,6 +49,8 @@ public class Inventory implements Serializable {
 	private String bullet3;
 	private String bullet4;
 	private String bullet5;
+        
+        @Field
 	private String keyword;
 	private String mainImage;
 	private String image2;

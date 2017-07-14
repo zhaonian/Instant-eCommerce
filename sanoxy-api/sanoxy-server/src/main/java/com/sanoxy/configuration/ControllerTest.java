@@ -9,11 +9,9 @@ package com.sanoxy.configuration;
  *
  * @author luan
  */
-
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
-
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -26,36 +24,36 @@ import org.springframework.web.context.WebApplicationContext;
 
 public class ControllerTest {
 
-	@Autowired
-	protected WebApplicationContext webApplicationContext;
+        @Autowired
+        protected WebApplicationContext webApplicationContext;
 
-	protected MockMvc mockMvc;
+        protected MockMvc mockMvc;
 
-	protected final MediaType MEDIA_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype(),
-            Charset.forName("UTF-8"));
-	
-    @SuppressWarnings("rawtypes")
-	private HttpMessageConverter mappingJackson2HttpMessageConverter;
+        protected final MediaType MEDIA_TYPE = new MediaType(MediaType.APPLICATION_JSON.getType(),
+                MediaType.APPLICATION_JSON.getSubtype(),
+                Charset.forName("UTF-8"));
 
-	@Before
-	public void setupMockMvc() {
-		mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-	}
-	
-    @Autowired
-    void setConverters(HttpMessageConverter<?>[] converters) {
-        this.mappingJackson2HttpMessageConverter = Arrays.asList(converters).stream()
-            .filter(hmc -> hmc instanceof MappingJackson2HttpMessageConverter)
-            .findAny()
-            .orElse(null);
-    }
+        @SuppressWarnings("rawtypes")
+        private HttpMessageConverter mappingJackson2HttpMessageConverter;
 
-    @SuppressWarnings("unchecked")
-	protected String json(Object o) throws IOException {
-        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-        this.mappingJackson2HttpMessageConverter.write(
-                o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
-        return mockHttpOutputMessage.getBodyAsString();
-    }
+        @Before
+        public void setupMockMvc() {
+                mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        }
+
+        @Autowired
+        void setConverters(HttpMessageConverter<?>[] converters) {
+                this.mappingJackson2HttpMessageConverter = Arrays.asList(converters).stream()
+                        .filter(hmc -> hmc instanceof MappingJackson2HttpMessageConverter)
+                        .findAny()
+                        .orElse(null);
+        }
+
+        @SuppressWarnings("unchecked")
+        protected String json(Object o) throws IOException {
+                MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
+                this.mappingJackson2HttpMessageConverter.write(
+                        o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
+                return mockHttpOutputMessage.getBodyAsString();
+        }
 }

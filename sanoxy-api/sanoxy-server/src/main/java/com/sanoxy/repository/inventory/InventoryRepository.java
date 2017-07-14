@@ -21,4 +21,6 @@ public interface InventoryRepository extends CrudRepository<Inventory, Integer>,
 	public List<Inventory> findAllInventoryItemsByCategoryId(@Param("categoryId") Integer categoryId, 
 								 @Param("startIndex") Integer startIndex, 
 								 @Param("numRowsToShow") Integer numRowsToShow);
+
+        public Long deleteById(Integer id);
 }

@@ -15,6 +15,13 @@ import com.sanoxy.controller.service.exception.InvalidRequestException;
 public class AddCategoryRequest implements ValidatedRequest {
         
         private String categoryName;
+        
+        public AddCategoryRequest() {
+        }
+        
+        public AddCategoryRequest(String categoryName) {
+                this.categoryName = categoryName;
+        }
 
         @Override
         public boolean isValid() throws InvalidRequestException {

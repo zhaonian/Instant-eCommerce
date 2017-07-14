@@ -23,7 +23,7 @@ public class InventoryCategory implements Serializable {
 	private Integer cid;
         
         @NotNull
-	private String category;
+	private String categoryName;
 	
 	@OneToMany(mappedBy = "inventoryCategory", cascade = CascadeType.ALL)
 	private List<Inventory> inventories;
@@ -31,8 +31,8 @@ public class InventoryCategory implements Serializable {
         public InventoryCategory() {
         }
         
-        public InventoryCategory(String category) {
-                this.category = category;
+        public InventoryCategory(String categoryName) {
+                this.categoryName = categoryName;
         }
 
 	public Integer getCid() {
@@ -43,12 +43,12 @@ public class InventoryCategory implements Serializable {
 		this.cid = cid;
 	}
 
-	public String getCategory() {
-		return category;
+	public String getCategoryName() {
+		return categoryName;
 	}
 
-	public void setCategory(String category) {
-		this.category = category;
+	public void setCategoryName(String categoryName) {
+		this.categoryName = categoryName;
 	}
 
 	@JsonIgnore

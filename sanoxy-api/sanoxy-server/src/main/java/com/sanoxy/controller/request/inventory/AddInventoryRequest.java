@@ -32,6 +32,45 @@ public class AddInventoryRequest implements ValidatedRequest {
 	private String mainImage;
 	private String image2;
 	private String image3;
+        
+        public AddInventoryRequest() {
+        }
+        
+        public AddInventoryRequest(Integer sku,
+                                   Integer suggestPrice,
+                                   String ean,
+                                   String title,
+                                   String brand,
+                                   String description,
+                                   String amazonItemType,
+                                   String amazonProductType,
+                                   String bullet1,
+                                   String bullet2,
+                                   String bullet3,
+                                   String bullet4,
+                                   String bullet5,
+                                   String keyword,
+                                   String mainImage,
+                                   String image2,
+                                   String image3) {
+                this.sku = sku;
+                this.suggestPrice = suggestPrice;
+                this.ean = ean;              
+                this.title = title;
+                this.brand = brand;
+                this.description = description;
+                this.amazonItemType = amazonItemType;
+                this.amazonProductType = amazonProductType;
+                this.bullet1 = bullet1;
+                this.bullet2 = bullet2;
+                this.bullet3 = bullet3;
+                this.bullet4 = bullet4;
+                this.bullet5 = bullet5;
+                this.keyword = keyword;
+                this.mainImage = mainImage;
+                this.image2 = image2;
+                this.image3 = image3;
+        }
 
 	@Override
 	public boolean isValid() throws InvalidRequestException {
