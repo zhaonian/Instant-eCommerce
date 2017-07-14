@@ -12,23 +12,20 @@ import com.sanoxy.controller.service.exception.InvalidRequestException;
  *
  * @author luan
  */
-public class GetCategoryRequest implements ValidatedRequest {
+public class AddCategoryRequest implements ValidatedRequest {
         
-        private String id;
-        
+        private String categoryName;
+
         @Override
         public boolean isValid() throws InvalidRequestException {
-                if (id == null || id.isEmpty()) {
-                        throw new InvalidRequestException("inventory id is invalid");
-                }
-                return true;
+                return !categoryName.isEmpty();
         }
 
-        public String getId() {
-                return id;
+        public String getCategoryName() {
+                return categoryName;
         }
 
-        public void setId(String id) {
-                this.id = id;
+        public void setCategoryName(String categoryName) {
+                this.categoryName = categoryName;
         }
 }
