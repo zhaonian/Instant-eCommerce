@@ -91,6 +91,18 @@ public class InventoryControllerTest extends ControllerTest {
                 return mapper.readValue(content, new TypeReference<List<InventoryCategory>>(){});
         }
         
+        private void requestAddAllInventories(int n, int m) throws Exception {
+                requestAddCategories(n);
+                List<InventoryCategory> cs = requestGetAllCategory();
+                
+                AddInventoryRequest[] requests = genAddInventoryRequests(m, cs);
+                for (int i = 0; i < requests.length; i ++) {
+                        InventoryCategory category = cs.get(i/m);
+                        mockMvc.perform(post("api/access/inventory/add/" + category.getCid()))
+                                .andExpect(status().isOk());
+                }
+        }
+        
         @Test
         @Rollback
         public void categoryTest() throws Exception {
@@ -112,9 +124,7 @@ public class InventoryControllerTest extends ControllerTest {
         public void addInventoryTest() throws Exception {
                 final int n = 10;
                 final int m = 100;
-                requestAddCategories(n);
-                List<InventoryCategory> cs = requestGetAllCategory();
                 
-                AddInventoryRequest[] requests = genAddInventoryRequests(m, cs);
+                requestAddAllInventories(n, m);
         }
 }

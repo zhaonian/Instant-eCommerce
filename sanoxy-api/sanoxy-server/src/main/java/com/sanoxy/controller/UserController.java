@@ -3,10 +3,10 @@ package com.sanoxy.controller;
 import com.sanoxy.controller.request.user.CreateUserRequest;
 import com.sanoxy.controller.request.user.LogInRequest;
 import com.sanoxy.controller.request.user.LogoutRequest;
-import com.sanoxy.controller.response.DatabaseConnection;
-import com.sanoxy.controller.response.Identity;
+import com.sanoxy.controller.response.DatabaseConnectionResponse;
 import com.sanoxy.controller.response.Response;
 import com.sanoxy.controller.response.Response.Status;
+import com.sanoxy.controller.response.UserIdentityResponse;
 import com.sanoxy.controller.service.exception.DuplicatedUserException;
 import com.sanoxy.controller.service.exception.InvalidRequestException;
 import com.sanoxy.controller.service.exception.UserNotExistException;
@@ -35,37 +35,41 @@ public class UserController {
          */
         @RequestMapping(value = {"/create", ""}, method = RequestMethod.POST)
         @ResponseBody
-        public Identity createUser(@RequestBody CreateUserRequest request) throws InvalidRequestException, DuplicatedUserException, UserNotExistException, AuthenticationException {
-                if (!request.isValid()) {
-                        throw new InvalidRequestException();
-                }
-                if (userRepository.existsByName(request.getUsername())) {
+        public Response createUser(@RequestBody CreateUserRequest request) throws InvalidRequestException, 
+                                                                                              DuplicatedUserException, 
+                                                                                              UserNotExistException, 
+                                                                                              AuthenticationException {
+                request.validate();
+                
+                if (userRepository.existsByName(request.getUsername()))
                         throw new DuplicatedUserException();
-                }
+                
                 User user = request.asUser();
                 userRepository.save(user);
-                return logIn(new LogInRequest(request.getUsername(), request.getPassword()));
+                return new Response(Status.Success);
         }
 
         /*
 	 * Log the user in the session
          */
-        @RequestMapping(value = {"/login", ""}, method = RequestMethod.POST)
+        @RequestMapping(value = {"/login/{db_name}", ""}, method = RequestMethod.POST)
         @ResponseBody
-        public Identity logIn(@RequestBody LogInRequest request) throws InvalidRequestException, UserNotExistException, AuthenticationException {
-                if (!request.isValid()) {
-                        throw new InvalidRequestException();
-                }
+        public UserIdentityResponse logIn(@RequestBody LogInRequest request, 
+                                          @PathVariable("db_name") String db_name) throws InvalidRequestException, 
+                                                                                    UserNotExistException, 
+                                                                                    AuthenticationException {
+                request.validate();
+                
                 User user = userRepository.findByName(request.getUsername());
-                if (user == null) {
+                if (user == null)
                         throw new UserNotExistException();
-                }
-                if (!user.getSalt().equals(request.getPassword())) {
+                
+                if (!user.getSalt().equals(request.getPassword())) 
                         throw new AuthenticationException("Password does not match");
-                }
-                Identity id = new Identity(true);
-                Session.setUser(id.getId(), user);
-                return id;
+                
+                UserIdentityResponse response = new UserIdentityResponse(0);
+                Session.setUser(response.getUid(), user);
+                return response;
         }
 
         /*
@@ -74,10 +78,9 @@ public class UserController {
         @RequestMapping(value = {"/logout", ""}, method = RequestMethod.POST)
         @ResponseBody
         public Response logout(@RequestBody LogoutRequest request) throws InvalidRequestException {
-                if (!request.isValid()) {
-                        throw new InvalidRequestException();
-                }
-                Session.removeUser(request.getId());
+                request.validate();
+                
+                Session.removeUser(request.getIdentity().getUid());
                 return new Response(Status.Success);
         }
 
@@ -87,7 +90,7 @@ public class UserController {
          */
         @RequestMapping(value = {"/connection/{db_name}", ""}, method = RequestMethod.GET)
         @ResponseBody
-        public DatabaseConnection validateConnection(@PathVariable("db_name") String db_name) {
-                return new DatabaseConnection(db_name);
+        public DatabaseConnectionResponse validateConnection(@PathVariable("db_name") String db_name) {
+                return new DatabaseConnectionResponse(0);
         }
 }

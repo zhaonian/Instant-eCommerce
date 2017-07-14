@@ -19,14 +19,11 @@ public class CreateUserRequest implements ValidatedRequest {
 	}
 	
 	@Override
-	public boolean isValid() throws InvalidRequestException {
-		if (username == null || username.isEmpty()) {
+	public void validate() throws InvalidRequestException {
+		if (username == null || username.isEmpty())
 			throw new InvalidRequestException("user name is invalid");
-		}
-		if (password == null || password.isEmpty()) {
+		if (password == null || password.isEmpty())
 			throw new InvalidRequestException("password is invalid");
-		}
-		return true;
 	}
 	
 	public String getUsername() {

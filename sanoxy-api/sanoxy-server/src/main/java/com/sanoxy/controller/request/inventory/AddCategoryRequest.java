@@ -5,14 +5,14 @@
  */
 package com.sanoxy.controller.request.inventory;
 
-import com.sanoxy.controller.request.ValidatedRequest;
+import com.sanoxy.controller.request.ValidatedIdentifiedRequest;
 import com.sanoxy.controller.service.exception.InvalidRequestException;
 
 /**
  *
  * @author luan
  */
-public class AddCategoryRequest implements ValidatedRequest {
+public class AddCategoryRequest extends ValidatedIdentifiedRequest {
         
         private String categoryName;
         
@@ -24,8 +24,10 @@ public class AddCategoryRequest implements ValidatedRequest {
         }
 
         @Override
-        public boolean isValid() throws InvalidRequestException {
-                return !categoryName.isEmpty();
+        public void validate() throws InvalidRequestException {
+                super.validate();
+                if (categoryName.isEmpty()) 
+                        throw new InvalidRequestException("Category name is empty");
         }
 
         public String getCategoryName() {

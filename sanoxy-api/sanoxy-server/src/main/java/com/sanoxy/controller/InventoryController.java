@@ -52,9 +52,8 @@ public class InventoryController {
         @RequestMapping(value = {"/category/add", ""}, method = RequestMethod.POST)
         @ResponseBody
         public Response addCategory(@RequestBody AddCategoryRequest request) throws InvalidRequestException {
-                if (!request.isValid()) {
-                        throw new InvalidRequestException();
-                }
+                request.validate();
+                
                 InventoryCategory category = new InventoryCategory(request.getCategoryName());
                 inventoryCategoryRepository.save(category);
                 
@@ -85,6 +84,12 @@ public class InventoryController {
                 Collection<Inventory> inventories = inventoryRepository.findAllInventoryItemsByCategoryId(categoryId, startIndex, numOfRowsToShow);
                 return inventories;
         }
+        
+        @RequestMapping(value = {"/inventory/get/{inventoryId}", ""}, method = RequestMethod.GET)
+        @ResponseBody
+        public Inventory getInventory(@PathVariable("inventoryId") Integer inventoryId) {
+                return null;
+        }
 
         /*
          * Add new inventory into a certain category
@@ -93,9 +98,8 @@ public class InventoryController {
         @ResponseBody
         public Response addInventory(@PathVariable("categoryId") Integer categoryId, @RequestBody AddInventoryRequest request) 
                 throws InvalidRequestException, ResourceMissingException, JsonProcessingException {
-                if (!request.isValid()) {
-                        throw new InvalidRequestException();
-                }
+                request.validate();
+                
                 InventoryCategory inventoryCategory = inventoryCategoryRepository.findByCid(categoryId);
                 if (inventoryCategory == null) {
                         throw new ResourceMissingException("Category does not exist");

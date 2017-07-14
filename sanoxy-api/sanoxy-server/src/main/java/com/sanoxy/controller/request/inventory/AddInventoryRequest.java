@@ -7,7 +7,7 @@ package com.sanoxy.controller.request.inventory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sanoxy.controller.request.ValidatedRequest;
+import com.sanoxy.controller.request.ValidatedIdentifiedRequest;
 import com.sanoxy.controller.service.exception.InvalidRequestException;
 import com.sanoxy.dao.inventory.Inventory;
 import com.sanoxy.dao.inventory.InventoryCategory;
@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * @author luan
  */
-public class AddInventoryRequest implements ValidatedRequest {
+public class AddInventoryRequest extends ValidatedIdentifiedRequest {
 
 	private Float suggestPrice;
 	private String ean;
@@ -56,10 +56,10 @@ public class AddInventoryRequest implements ValidatedRequest {
         }
 
 	@Override
-	public boolean isValid() throws InvalidRequestException {
+	public void validate() throws InvalidRequestException {
+                super.validate();
 		if (title == null || title.isEmpty()) { throw new InvalidRequestException("title is missing"); }
 		if (brand == null || brand.isEmpty()) { throw new InvalidRequestException("brand is missing"); }
-		return true;
 	}
 
 	public Inventory asInventory(InventoryCategory category) throws JsonProcessingException {

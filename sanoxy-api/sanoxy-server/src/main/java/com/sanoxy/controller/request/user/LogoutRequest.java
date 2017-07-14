@@ -1,33 +1,14 @@
 package com.sanoxy.controller.request.user;
 
-import com.sanoxy.controller.request.ValidatedRequest;
-import com.sanoxy.controller.service.exception.InvalidRequestException;
+import com.sanoxy.controller.request.ValidatedIdentifiedRequest;
+import com.sanoxy.controller.service.UserIdentity;
 
-public class LogoutRequest implements ValidatedRequest {
-        
-	private String id;
+public class LogoutRequest extends ValidatedIdentifiedRequest {
         
         public LogoutRequest() {
-                
         }
         
-        public LogoutRequest(String id) {
-                this.id = id;
+        public LogoutRequest(UserIdentity identity) {
+                super(identity);
         }
-	
-	@Override
-	public boolean isValid() throws InvalidRequestException {
-		if (id == null || id.isEmpty()) {
-			throw new InvalidRequestException("id is invalid");
-		}
-		return true;
-	}
-        
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
 }
