@@ -1,6 +1,7 @@
 package com.sanoxy.dao.inventory;
 
 import java.io.Serializable;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -9,9 +10,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Indexed;
 
 
 @Entity
+@Indexed
 @Table(name = "inventory")
 public class Inventory implements Serializable {
 	@Id
@@ -24,11 +28,20 @@ public class Inventory implements Serializable {
 	@ManyToOne(targetEntity=InventoryCategory.class)
 	@JoinColumn(name = "cid")
 	private InventoryCategory inventoryCategory;
+        
 	private Integer suggestPrice;
 	private String ean;
+        
+        @Field
 	private String title;
+        
+        @Field
 	private String brand;
+        
+        @Field
+        @Column(columnDefinition = "TEXT")
 	private String description;
+        
 	private String amazonItemType;
 	private String amazonProductType;
 	private String bullet1;
