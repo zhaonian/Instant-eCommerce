@@ -1,12 +1,12 @@
 package com.sanoxy.controller.response;
 
-public class DBName {
+public class DatabaseConnection {
 	
 	private String dbName;
 	
-	public DBName() { };
+	public DatabaseConnection() { };
 	
-	public DBName(String dbName) {
+	public DatabaseConnection(String dbName) {
 		this.dbName = dbName;
 	}
 	

@@ -1,7 +1,8 @@
 package com.sanoxy.dao.inventory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.io.Serializable;
 import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,16 +11,15 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Entity
 @Table(name = "inventory_category")
-public class InventoryCategory {
+public class InventoryCategory implements Serializable {
 	
 	@Id
-	@NotNull
 	@Column(name="cid")
 	private Integer cid;
+        
+        @NotNull
 	private String category;
 	
 	@OneToMany(mappedBy = "inventoryCategory", cascade = CascadeType.ALL)

@@ -1,28 +1,32 @@
 package com.sanoxy.dao.user;
 
 
-import javax.persistence.Column;
+import java.io.Serializable;
+import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
+import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.GenericGenerator;
 
 
 @Entity
 @Table(name = "Sanoxy_user")
-public class User {
+public class User implements Serializable {
 	
 	@Id
 	@GenericGenerator(name = "id-generator", strategy = "com.sanoxy.repository.ResourceIdGenerator")
 	@GeneratedValue(generator = "id-generator")
 	private String id;
-	@Column(nullable=false)
+        
+	@NotNull
 	private Integer permission;
-	@Column(nullable=false)
+        
+	@NotNull
 	private String name;
-	@Column(nullable=false)
+        
+	@NotNull
 	private String salt;
 	
 	public String getId() {
@@ -49,4 +53,19 @@ public class User {
 	public void setSalt(String salt) {
 		this.salt = salt;
 	}
+
+        @Override
+        public int hashCode() {
+                int hash = 3;
+                hash = 53 * hash + Objects.hashCode(this.id);
+                return hash;
+        }
+        
+        @Override
+        public boolean equals(Object o) {
+                if (!(o instanceof User))
+                        return false;
+                User rhs = (User) o;
+                return id == rhs.id;
+        }
 }

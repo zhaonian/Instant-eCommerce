@@ -3,7 +3,7 @@ package com.sanoxy.controller;
 import com.sanoxy.controller.request.user.CreateUserRequest;
 import com.sanoxy.controller.request.user.LogInRequest;
 import com.sanoxy.controller.request.user.LogoutRequest;
-import com.sanoxy.controller.response.DBName;
+import com.sanoxy.controller.response.DatabaseConnection;
 import com.sanoxy.controller.response.Identity;
 import com.sanoxy.controller.response.Response;
 import com.sanoxy.controller.response.Response.Status;
@@ -87,7 +87,7 @@ public class UserController {
          */
         @RequestMapping(value = {"/connection/{db_name}", ""}, method = RequestMethod.GET)
         @ResponseBody
-        public DBName validateConnection(@PathVariable("db_name") String db_name) {
-                return new DBName(db_name);
+        public DatabaseConnection validateConnection(@PathVariable("db_name") String db_name) {
+                return new DatabaseConnection(db_name);
         }
 }

@@ -5,15 +5,19 @@
  */
 package com.sanoxy.server.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanoxy.configuration.ControllerTest;
 import com.sanoxy.controller.request.user.CreateUserRequest;
 import com.sanoxy.controller.request.user.LogInRequest;
+import com.sanoxy.controller.request.user.LogoutRequest;
+import com.sanoxy.controller.response.Identity;
 import com.sanoxy.dao.user.User;
 import com.sanoxy.repository.user.UserRepository;
 import com.sanoxy.service.Session;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +25,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.web.servlet.MvcResult;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -38,67 +43,78 @@ public class UserControllerTest extends ControllerTest {
 
         @Autowired
         private UserRepository userRepository;
+        
+        private Identity responseToIdentity(MvcResult result) throws Exception {
+                String content = result.getResponse().getContentAsString();
+                ObjectMapper mapper = new ObjectMapper();
+                Identity iid = mapper.readValue(content, Identity.class);
+                return iid;
+        }
+        
+        private Identity requestNewUser() throws Exception {
+                CreateUserRequest request = new CreateUserRequest();
+                request.setUsername("test-user");
+                request.setPassword("test-password");
+                MvcResult result = mockMvc.perform(post("/api/user/create")
+                        .content(json(request))
+                        .contentType(MEDIA_TYPE))
+                        .andExpect(status().isOk())
+                        .andReturn();
+                
+                return responseToIdentity(result);
+        }
+        
+        private Identity requestNewUserLogin() throws Exception {
+                LogInRequest logInRequest = new LogInRequest("test-user", "test-password");
+                MvcResult result = mockMvc.perform(post("/api/user/login")
+                        .content(json(logInRequest))
+                        .contentType(MEDIA_TYPE))
+                        .andExpect(status().isOk())
+                        //.andExpect(content().json(json(user)))
+                        .andReturn();
+                
+                return responseToIdentity(result);
+        }
+        
+        private void requestUserLogout(Identity iid) throws Exception {
+                LogoutRequest request = new LogoutRequest(iid.getId());
+                mockMvc.perform(post("/api/user/logout")
+                        .content(json(request))
+                        .contentType(MEDIA_TYPE))
+                        .andExpect(status().isOk());
+        }
+        
+        private User getRequestedNewUser() throws Exception {
+                return userRepository.findByNameAndPassword("test-user", "test-password");
+        }
 
         @Test
         @Rollback
         public void createUserTest() throws Exception {
-                CreateUserRequest request = new CreateUserRequest();
-                request.setUsername("test-user");
-                request.setPassword("test-password");
-                mockMvc.perform(post("/api/user/create")
-                        .content(json(request))
-                        .contentType(MEDIA_TYPE))
-                        .andExpect(status().isOk());
-                User user = userRepository.findByNameAndPassword("test-user", "test-password");
+                requestNewUser();
+                User user = getRequestedNewUser();
                 assertNotNull(user);
         }
 
         @Test
         @Rollback
         public void userLogInTest() throws Exception {
-                // create a usr in db first
-                User user = new User();
-                user.setName("test-user");
-                user.setSalt("test-password");
-                user.setPermission(1);
-                String id = userRepository.save(user).getId();
-
-                // log in
-                LogInRequest logInRequest = new LogInRequest("test-user", "test-password");
-                mockMvc.perform(post("/api/user/login")
-                        .content(json(logInRequest))
-                        .contentType(MEDIA_TYPE))
-                        .andExpect(status().isOk());
-                assertEquals(Session.getUser(id), user);
+                requestNewUser();
+                Identity iid = requestNewUserLogin();
+                
+                User user = getRequestedNewUser();
+                User loggedInUser = Session.getUser(iid.getId());
+                assertEquals(loggedInUser, user);
         }
 
         @Test
         @Rollback
         public void userLogIOutest() throws Exception {
-                // create a usr in db first
-                /*User user = new User();
-                user.setName("test-user");
-                user.setSalt("test-password");
-                user.setPermission(1);
-                String id = userRepository.save(user).getId();
-
-                // log the user in
-                LogInRequest logInRequest = new LogInRequest("test-user", "test-password");
-                mockMvc.perform(post("/api/user/login")
-                        .content(json(logInRequest))
-                        .contentType(MEDIA_TYPE))
-                        .andExpect(status().isOk());
-                assertEquals(Session.getUser(id), user);
-
-                // log the user out
-                LogoutRequest logOutRequest = new LogoutRequest();
-                logOutRequest.setUsername("test-user");
-                logOutRequest.setId(id);
-                mockMvc.perform(post("/api/user/logout")
-                        .content(json(logOutRequest))
-                        .contentType(MEDIA_TYPE))
-                        .andExpect(status().isOk());
-                assertNull(Session.getUser(id));*/
+                requestNewUser();
+                Identity iid = requestNewUserLogin();
+                requestUserLogout(iid);
+                
+                assertNull(Session.getUser(iid.getId()));
         }
 
         @Test
