@@ -12,6 +12,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Indexed;
+import org.hibernate.validator.constraints.NotEmpty;
 
 
 @Entity
@@ -21,58 +22,90 @@ public class Inventory implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
-
-        @NotNull
-	private Integer sku;
         
 	@ManyToOne(targetEntity=InventoryCategory.class)
 	@JoinColumn(name = "cid")
 	private InventoryCategory inventoryCategory;
         
-	private Integer suggestPrice;
+        @NotNull
+	private Float suggestPrice;
+        
+        @NotNull
+        @NotEmpty
 	private String ean;
         
         @Field
+        @NotNull
+        @NotEmpty
 	private String title;
         
         @Field
+        @NotNull
+        @NotEmpty
 	private String brand;
         
         @Field
+        @NotNull
+        @NotEmpty
         @Column(columnDefinition = "TEXT")
 	private String description;
         
+        @NotNull
 	private String amazonItemType;
-	private String amazonProductType;
-	private String bullet1;
-	private String bullet2;
-	private String bullet3;
-	private String bullet4;
-	private String bullet5;
         
+        @NotNull
+	private String amazonProductType;
+        
+        @NotEmpty
+	private String bulletsJson;
+        
+        @NotNull
+        @NotEmpty
         @Field
 	private String keyword;
-	private String mainImage;
-	private String image2;
-	private String image3;
+        
+        @NotNull
+        @NotEmpty
+	private String imageUrlsJson;
+
+        
 	
 //	@OneToMany(mappedBy="inventory_id", cascade = CascadeType.ALL)
 //	private List<WarehouseCategory> warehouseCateogries;
-
+        
+        public Inventory() {
+        }
+        
+        public Inventory(InventoryCategory inventoryCategory, 
+                         Float suggestPrice, 
+                         String ean, 
+                         String title, 
+                         String brand, 
+                         String description,
+                         String amazonItemType,
+                         String amazonProductType,
+                         String bulletsJson,
+                         String keyword,
+                         String imageUrlsJson) {
+                this.inventoryCategory = inventoryCategory;
+                this.suggestPrice = suggestPrice;
+                this.ean = ean;
+                this.title = title;
+                this.brand = brand;
+                this.description = description;
+                this.amazonItemType = amazonItemType;
+                this.amazonProductType = amazonProductType;
+                this.bulletsJson = bulletsJson;
+                this.keyword = keyword;
+                this.imageUrlsJson = imageUrlsJson;
+        }
+        
 	public Integer getId() {
 		return id;
 	}
 
 	public void setId(Integer id) {
 		this.id = id;
-	}
-
-	public Integer getSku() {
-		return sku;
-	}
-
-	public void setSku(Integer sku) {
-		this.sku = sku;
 	}
 
 
@@ -117,11 +150,11 @@ public class Inventory implements Serializable {
 		this.description = description;
 	}
 
-	public Integer getSuggestPrice() {
+	public Float getSuggestPrice() {
 		return suggestPrice;
 	}
 
-	public void setSuggestPrice(Integer suggestPrice) {
+	public void setSuggestPrice(Float suggestPrice) {
 		this.suggestPrice = suggestPrice;
 	}
 
@@ -141,45 +174,13 @@ public class Inventory implements Serializable {
 		this.amazonProductType = amazonProductType;
 	}
 
-	public String getBullet1() {
-		return bullet1;
-	}
-
-	public void setBullet1(String bullet1) {
-		this.bullet1 = bullet1;
-	}
-
-	public String getBullet2() {
-		return bullet2;
-	}
-
-	public void setBullet2(String bullet2) {
-		this.bullet2 = bullet2;
-	}
-
-	public String getBullet3() {
-		return bullet3;
-	}
-
-	public void setBullet3(String bullet3) {
-		this.bullet3 = bullet3;
-	}
-
-	public String getBullet4() {
-		return bullet4;
-	}
-
-	public void setBullet4(String bullet4) {
-		this.bullet4 = bullet4;
-	}
-
-	public String getBullet5() {
-		return bullet5;
-	}
-
-	public void setBullet5(String bullet5) {
-		this.bullet5 = bullet5;
-	}
+	public String getBulletsJson() {
+                return this.bulletsJson;
+        }
+        
+        public void setBulletsJson(String bulletsJson) {
+                this.bulletsJson = bulletsJson;
+        }
 
 	public String getKeyword() {
 		return keyword;
@@ -189,27 +190,11 @@ public class Inventory implements Serializable {
 		this.keyword = keyword;
 	}
 
-	public String getMainImage() {
-		return mainImage;
-	}
-
-	public void setMainImage(String mainImage) {
-		this.mainImage = mainImage;
-	}
-
-	public String getImage2() {
-		return image2;
-	}
-
-	public void setImage2(String image2) {
-		this.image2 = image2;
-	}
-
-	public String getImage3() {
-		return image3;
-	}
-
-	public void setImage3(String image3) {
-		this.image3 = image3;
-	}
+	public String getImageUrlsJson() {
+                return this.imageUrlsJson;
+        }
+        
+        public void setsImageUrlsJson(String imageUrlsJson) {
+                this.imageUrlsJson = imageUrlsJson;
+        }
 }

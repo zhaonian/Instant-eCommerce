@@ -13,6 +13,7 @@ import com.sanoxy.controller.request.inventory.AddInventoryRequest;
 import com.sanoxy.dao.inventory.InventoryCategory;
 import com.sanoxy.repository.inventory.InventoryCategoryRepository;
 import com.sanoxy.repository.inventory.InventoryRepository;
+import java.util.Collection;
 import java.util.List;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -49,8 +50,8 @@ public class InventoryControllerTest extends ControllerTest {
                 return requests;
         }
         
-        private AddInventoryRequest[] genAddInventoryRequests(int n, InventoryCategory[] categories) {
-                AddInventoryRequest[] requests = new AddInventoryRequest[n*categories.length];
+        private AddInventoryRequest[] genAddInventoryRequests(int n, Collection<InventoryCategory> categories) {
+                AddInventoryRequest[] requests = new AddInventoryRequest[n*categories.size()];
                 int i = 0;
                 for (InventoryCategory category : categories) {
                         for (int j = 0; j < n; i++, j ++) {
@@ -60,7 +61,28 @@ public class InventoryControllerTest extends ControllerTest {
                 return requests;
         }
         
-        private List<InventoryCategory> getAllCategory() throws Exception {
+        private void requestAddCategories(int n) throws Exception {
+                AddCategoryRequest[] requests = genAddCategoryRequests(n);
+                for (AddCategoryRequest request: requests) {
+                        mockMvc.perform(post("/api/access/category/add")
+                                .content(json(request))
+                                .contentType(MEDIA_TYPE))
+                               .andExpect(status().isOk());
+                        List<InventoryCategory> c = inventoryCategoryRepository.findByCategoryName(request.getCategoryName());
+                        assertTrue(c.size() == 1);
+                }
+        }
+        
+        private void requestDeleteCategories(Collection<InventoryCategory> categories) throws Exception {
+                for (InventoryCategory category: categories) {
+                        mockMvc.perform(post("/api/access/category/delete/" + category.getCid()))
+                               .andExpect(status().isOk());
+                        List<InventoryCategory> c = inventoryCategoryRepository.findByCategoryName(category.getCategoryName());
+                        assertTrue(c.isEmpty());
+                }
+        }
+        
+        private List<InventoryCategory> requestGetAllCategory() throws Exception {
                 MvcResult result = mockMvc.perform(get("/api/access/category/get/"))
                                                 .andExpect(status().isOk())
                                                 .andReturn();
@@ -72,33 +94,27 @@ public class InventoryControllerTest extends ControllerTest {
         @Test
         @Rollback
         public void categoryTest() throws Exception {
+                final int n = 100;
+                
                 // add.
-                AddCategoryRequest[] requests = genAddCategoryRequests(100);
-                for (AddCategoryRequest request: requests) {
-                        mockMvc.perform(post("/api/access/category/add")
-                                .content(json(request))
-                                .contentType(MEDIA_TYPE))
-                               .andExpect(status().isOk());
-                        List<InventoryCategory> c = inventoryCategoryRepository.findByCategoryName(request.getCategoryName());
-                        assertTrue(c.size() == 1);
-                }
-                List<InventoryCategory> cs = getAllCategory();
-                assertTrue(cs.size() == requests.length);
+                requestAddCategories(n);
+                List<InventoryCategory> cs = requestGetAllCategory();
+                assertTrue(cs.size() == n);
                 
                 // delete.
-                for (InventoryCategory category: cs) {
-                        mockMvc.perform(post("/api/access/category/delete/" + category.getCid()))
-                               .andExpect(status().isOk());
-                        List<InventoryCategory> c = inventoryCategoryRepository.findByCategoryName(category.getCategoryName());
-                        assertTrue(c.isEmpty());
-                }
-                cs = getAllCategory();
+                requestDeleteCategories(cs);
+                cs = requestGetAllCategory();
                 assertTrue(cs.isEmpty());
         }
         
         @Test
         @Rollback
-        public void addInventoryTest() {
+        public void addInventoryTest() throws Exception {
+                final int n = 10;
+                final int m = 100;
+                requestAddCategories(n);
+                List<InventoryCategory> cs = requestGetAllCategory();
                 
+                AddInventoryRequest[] requests = genAddInventoryRequests(m, cs);
         }
 }
