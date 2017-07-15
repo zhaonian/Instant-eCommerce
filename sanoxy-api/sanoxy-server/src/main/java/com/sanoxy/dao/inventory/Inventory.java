@@ -23,9 +23,6 @@ public class Inventory implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer id;
         
-        @NotNull
-        private Integer dbid;
-        
 	@ManyToOne(targetEntity=InventoryCategory.class)
 	@JoinColumn(name = "cid")
 	private InventoryCategory inventoryCategory;

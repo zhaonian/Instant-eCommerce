@@ -34,8 +34,7 @@ public class Workspace implements Serializable {
         public Workspace() {
         }
         
-        public Workspace(Integer wid, String name) {
-                this.wid = wid;
+        public Workspace(String name) {
                 this.name = name;
         }
         

@@ -36,6 +36,9 @@ public class UserServiceImpl implements UserService {
         
         @Override
         public void createNew(String userName, String passcode) throws DuplicatedUserException {
+                if (userName.startsWith("master_"))
+                        throw new DuplicatedUserException();
+                
                 if (userRepository.existsByName(userName))
                         throw new DuplicatedUserException();
                 

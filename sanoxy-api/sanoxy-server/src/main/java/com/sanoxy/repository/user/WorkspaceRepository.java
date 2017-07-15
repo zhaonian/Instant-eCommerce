@@ -9,6 +9,8 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface WorkspaceRepository extends CrudRepository<Workspace, Integer> {
         
-        Workspace findByWid(Integer wid);
-        Workspace findByName(String name);
+        public Workspace findByWid(Integer wid);
+        public Workspace findByName(String name);
+
+        public boolean existsByName(String name);
 }

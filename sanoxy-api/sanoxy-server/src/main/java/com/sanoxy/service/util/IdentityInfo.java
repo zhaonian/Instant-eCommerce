@@ -15,14 +15,14 @@ public class IdentityInfo {
         
         private final User user;
         private final Workspace workspace;
-        private final Set<UserPermission> permissions;
+        private final Set<WorkspacePermission> permissions;
         
         public IdentityInfo(User user, Workspace workspace, String permissionsJson) throws IOException {
                 this.user = user;
                 this.workspace = workspace;
                 
                 ObjectMapper mapper = new ObjectMapper();
-                this.permissions = mapper.readValue(permissionsJson, new TypeReference<Set<UserPermission>>(){});
+                this.permissions = mapper.readValue(permissionsJson, new TypeReference<Set<WorkspacePermission>>(){});
         }
         
         public User getUser() {
@@ -33,7 +33,7 @@ public class IdentityInfo {
                 return this.workspace;
         }
         
-        public Set<UserPermission> getPermissions() {
+        public Set<WorkspacePermission> getPermissions() {
                 return this.permissions;
         }
 }
