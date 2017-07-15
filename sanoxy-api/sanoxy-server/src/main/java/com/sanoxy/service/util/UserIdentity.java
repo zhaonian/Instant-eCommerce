@@ -1,5 +1,5 @@
 
-package com.sanoxy.controller.service;
+package com.sanoxy.service.util;
 
 import java.util.Objects;
 import java.util.UUID;

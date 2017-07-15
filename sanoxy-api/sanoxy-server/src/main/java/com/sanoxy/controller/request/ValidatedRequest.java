@@ -1,7 +1,7 @@
 package com.sanoxy.controller.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sanoxy.controller.service.exception.InvalidRequestException;
+import com.sanoxy.service.exception.InvalidRequestException;
 
 public interface ValidatedRequest {
 	

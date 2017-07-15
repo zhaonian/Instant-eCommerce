@@ -1,4 +1,4 @@
-package com.sanoxy.dao;
+package com.sanoxy.service.util;
 
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;

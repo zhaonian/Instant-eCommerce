@@ -1,5 +1,5 @@
 
-package com.sanoxy.controller.service;
+package com.sanoxy.service.util;
 
 /**
  * @author davis

@@ -8,7 +8,7 @@ package com.sanoxy.controller.request.inventory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanoxy.controller.request.ValidatedIdentifiedRequest;
-import com.sanoxy.controller.service.exception.InvalidRequestException;
+import com.sanoxy.service.exception.InvalidRequestException;
 import com.sanoxy.dao.inventory.Inventory;
 import com.sanoxy.dao.inventory.InventoryCategory;
 import java.util.ArrayList;

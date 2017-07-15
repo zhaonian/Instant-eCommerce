@@ -2,21 +2,12 @@ package com.sanoxy.controller.request.user;
 
 
 import com.sanoxy.controller.request.ValidatedRequest;
-import com.sanoxy.controller.service.exception.InvalidRequestException;
-import com.sanoxy.dao.user.User;
+import com.sanoxy.service.exception.InvalidRequestException;
 
 public class CreateUserRequest implements ValidatedRequest {
 	
 	private String username;
 	private String password;
-	
-	public User asUser() {
-		User user = new User();
-		user.setName(username);
-		user.setPermission(1);
-		user.setSalt(password);
-		return user;
-	}
 	
 	@Override
 	public void validate() throws InvalidRequestException {

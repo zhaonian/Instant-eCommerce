@@ -1,7 +1,7 @@
 package com.sanoxy.controller.request.user;
 
 import com.sanoxy.controller.request.ValidatedIdentifiedRequest;
-import com.sanoxy.controller.service.UserIdentity;
+import com.sanoxy.service.util.UserIdentity;
 
 public class LogoutRequest extends ValidatedIdentifiedRequest {
         

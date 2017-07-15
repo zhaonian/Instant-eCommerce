@@ -6,7 +6,7 @@
 package com.sanoxy.controller.request.inventory;
 
 import com.sanoxy.controller.request.ValidatedIdentifiedRequest;
-import com.sanoxy.controller.service.exception.InvalidRequestException;
+import com.sanoxy.service.exception.InvalidRequestException;
 
 /**
  *

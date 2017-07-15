@@ -1,7 +1,7 @@
 package com.sanoxy.controller.request.user;
 
 import com.sanoxy.controller.request.ValidatedRequest;
-import com.sanoxy.controller.service.exception.InvalidRequestException;
+import com.sanoxy.service.exception.InvalidRequestException;
 
 public class LogInRequest implements ValidatedRequest {
 	

@@ -1,13 +1,23 @@
 package com.sanoxy.controller.response;
 
-import com.sanoxy.controller.service.UserIdentity;
+import com.sanoxy.service.util.UserIdentity;
 
-public class UserIdentityResponse extends UserIdentity {
+public class UserIdentityResponse extends Response {
+        
+        private UserIdentity userIdentity;
 	
         public UserIdentityResponse() {
         }
         
-	public UserIdentityResponse(Integer dbid) {
-		super(dbid);
+	public UserIdentityResponse(UserIdentity userIdentity) {
+		this.userIdentity = userIdentity;
 	}
+        
+        public UserIdentity getUserIdentity() {
+                return userIdentity;
+        }
+        
+        public void setUserIdentity(UserIdentity userIdentity) {
+                this.userIdentity = userIdentity;
+        }
 }

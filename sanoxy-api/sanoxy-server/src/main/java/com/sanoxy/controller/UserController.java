@@ -7,12 +7,11 @@ import com.sanoxy.controller.response.DatabaseConnectionResponse;
 import com.sanoxy.controller.response.Response;
 import com.sanoxy.controller.response.Response.Status;
 import com.sanoxy.controller.response.UserIdentityResponse;
-import com.sanoxy.controller.service.exception.DuplicatedUserException;
-import com.sanoxy.controller.service.exception.InvalidRequestException;
-import com.sanoxy.controller.service.exception.UserNotExistException;
-import com.sanoxy.dao.user.User;
-import com.sanoxy.repository.user.UserRepository;
-import com.sanoxy.service.Session;
+import com.sanoxy.service.UserService;
+import com.sanoxy.service.exception.DuplicatedUserException;
+import com.sanoxy.service.exception.InvalidRequestException;
+import com.sanoxy.service.exception.UserNotExistException;
+import com.sanoxy.service.util.UserIdentity;
 import javax.naming.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -28,7 +27,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class UserController {
 
         @Autowired
-        private UserRepository userRepository;
+        private UserService userService;
 
         /*
 	 * Create a new user in the db
@@ -40,12 +39,7 @@ public class UserController {
                                                                                               UserNotExistException, 
                                                                                               AuthenticationException {
                 request.validate();
-                
-                if (userRepository.existsByName(request.getUsername()))
-                        throw new DuplicatedUserException();
-                
-                User user = request.asUser();
-                userRepository.save(user);
+                userService.createNew(request.getUsername(), request.getPassword());
                 return new Response(Status.Success);
         }
 
@@ -59,17 +53,8 @@ public class UserController {
                                                                                     UserNotExistException, 
                                                                                     AuthenticationException {
                 request.validate();
-                
-                User user = userRepository.findByName(request.getUsername());
-                if (user == null)
-                        throw new UserNotExistException();
-                
-                if (!user.getSalt().equals(request.getPassword())) 
-                        throw new AuthenticationException("Password does not match");
-                
-                UserIdentityResponse response = new UserIdentityResponse(0);
-                Session.setUser(response.getUid(), user);
-                return response;
+                UserIdentity identity = userService.authenticate(db_name, request.getUsername(), request.getPassword());
+                return new UserIdentityResponse(identity);
         }
 
         /*
@@ -79,15 +64,11 @@ public class UserController {
         @ResponseBody
         public Response logout(@RequestBody LogoutRequest request) throws InvalidRequestException {
                 request.validate();
-                
-                Session.removeUser(request.getIdentity().getUid());
+                userService.logout(request.getUserIdentity());
                 return new Response(Status.Success);
         }
 
-        /*
-	 * Return sanoxy directly for now
-	 * TODO: Each user will have its own database in the future
-         */
+        
         @RequestMapping(value = {"/connection/{db_name}", ""}, method = RequestMethod.GET)
         @ResponseBody
         public DatabaseConnectionResponse validateConnection(@PathVariable("db_name") String db_name) {

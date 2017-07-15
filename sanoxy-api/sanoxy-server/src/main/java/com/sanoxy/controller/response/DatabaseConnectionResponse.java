@@ -1,6 +1,6 @@
 package com.sanoxy.controller.response;
 
-import com.sanoxy.controller.service.DatabaseConnection;
+import com.sanoxy.service.util.DatabaseConnection;
 
 public class DatabaseConnectionResponse extends DatabaseConnection {
 	

@@ -13,7 +13,7 @@ import com.sanoxy.controller.request.user.LogoutRequest;
 import com.sanoxy.controller.response.UserIdentityResponse;
 import com.sanoxy.dao.user.User;
 import com.sanoxy.repository.user.UserRepository;
-import com.sanoxy.service.Session;
+import com.sanoxy.service.UserSessionService;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -40,6 +40,9 @@ public class UserControllerTest extends ControllerTest {
 
         @Autowired
         private UserRepository userRepository;
+        
+        @Autowired
+        private UserSessionService userSessionService;
         
         private UserIdentityResponse responseToIdentity(MvcResult result) throws Exception {
                 String content = result.getResponse().getContentAsString();
@@ -70,7 +73,7 @@ public class UserControllerTest extends ControllerTest {
         }
         
         private void requestUserLogout(UserIdentityResponse iid) throws Exception {
-                LogoutRequest request = new LogoutRequest(iid);
+                LogoutRequest request = new LogoutRequest(iid.getUserIdentity());
                 mockMvc.perform(post("/api/user/logout")
                         .content(json(request))
                         .contentType(MEDIA_TYPE))
@@ -78,7 +81,7 @@ public class UserControllerTest extends ControllerTest {
         }
         
         private User getRequestedNewUser() throws Exception {
-                return userRepository.findByNameAndPassword("test-user", "test-password");
+                return userRepository.findByName("test-user");
         }
 
         @Test
@@ -96,7 +99,7 @@ public class UserControllerTest extends ControllerTest {
                 UserIdentityResponse iid = requestNewUserLogin();
                 
                 User user = getRequestedNewUser();
-                User loggedInUser = Session.getUser(iid.getUid());
+                User loggedInUser = userSessionService.getUser(iid.getUserIdentity().getUid());
                 assertEquals(loggedInUser, user);
         }
 
@@ -107,7 +110,7 @@ public class UserControllerTest extends ControllerTest {
                 UserIdentityResponse iid = requestNewUserLogin();
                 requestUserLogout(iid);
                 
-                assertNull(Session.getUser(iid.getUid()));
+                assertNull(userSessionService.getUser(iid.getUserIdentity().getUid()));
         }
 
         @Test

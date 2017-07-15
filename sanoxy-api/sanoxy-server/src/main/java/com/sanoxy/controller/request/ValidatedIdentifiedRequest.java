@@ -2,38 +2,38 @@
 package com.sanoxy.controller.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.sanoxy.controller.service.UserIdentity;
-import com.sanoxy.controller.service.exception.InvalidRequestException;
+import com.sanoxy.service.exception.InvalidRequestException;
+import com.sanoxy.service.util.UserIdentity;
 
 /**
  * @author davis
  */
 public abstract class ValidatedIdentifiedRequest implements ValidatedRequest {
         
-        private UserIdentity identity;
+        private UserIdentity userIdentity;
         
         public ValidatedIdentifiedRequest() {
         }
         
         public ValidatedIdentifiedRequest(UserIdentity identity) {
-                this.identity = identity;
+                this.userIdentity = identity;
         }
         
-        public UserIdentity getIdentity() {
-                return identity;
+        public UserIdentity getUserIdentity() {
+                return userIdentity;
         }
         
-        public void setIdentity(UserIdentity identity) {
-                this.identity = identity;
+        public void setUserIdentity(UserIdentity userIdentity) {
+                this.userIdentity = userIdentity;
         }
         
         @JsonIgnore
         @Override
         public void validate() throws InvalidRequestException {
-                if (identity.getUid() == null || identity.getUid().isEmpty()) {
+                if (userIdentity.getUid() == null || userIdentity.getUid().isEmpty()) {
 			throw new InvalidRequestException("User id is invalid");
 		}
-                if (identity.getDbid() == null) {
+                if (userIdentity.getDbid() == null) {
                         throw new InvalidRequestException("Database id is invalid");
                 }
         }

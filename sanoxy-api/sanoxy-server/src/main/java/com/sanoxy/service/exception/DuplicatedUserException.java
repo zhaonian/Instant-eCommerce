@@ -1,4 +1,4 @@
-package com.sanoxy.controller.service.exception;
+package com.sanoxy.service.exception;
 
 public class DuplicatedUserException extends Exception{
 
