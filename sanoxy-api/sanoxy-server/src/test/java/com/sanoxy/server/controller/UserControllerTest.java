@@ -13,7 +13,7 @@ import com.sanoxy.controller.request.user.LogoutRequest;
 import com.sanoxy.controller.response.UserIdentityResponse;
 import com.sanoxy.dao.user.User;
 import com.sanoxy.repository.user.UserRepository;
-import com.sanoxy.service.UserSessionService;
+import com.sanoxy.service.IdentitySessionService;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -42,7 +42,7 @@ public class UserControllerTest extends ControllerTest {
         private UserRepository userRepository;
         
         @Autowired
-        private UserSessionService userSessionService;
+        private IdentitySessionService userSessionService;
         
         private UserIdentityResponse responseToIdentity(MvcResult result) throws Exception {
                 String content = result.getResponse().getContentAsString();
@@ -99,7 +99,7 @@ public class UserControllerTest extends ControllerTest {
                 UserIdentityResponse iid = requestNewUserLogin();
                 
                 User user = getRequestedNewUser();
-                User loggedInUser = userSessionService.getUser(iid.getUserIdentity().getUid());
+                User loggedInUser = userSessionService.getIdentityInfo(iid.getUserIdentity().getUid()).getUser();
                 assertEquals(loggedInUser, user);
         }
 
@@ -110,7 +110,7 @@ public class UserControllerTest extends ControllerTest {
                 UserIdentityResponse iid = requestNewUserLogin();
                 requestUserLogout(iid);
                 
-                assertNull(userSessionService.getUser(iid.getUserIdentity().getUid()));
+                assertNull(userSessionService.getIdentityInfo(iid.getUserIdentity().getUid()));
         }
 
         @Test

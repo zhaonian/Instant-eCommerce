@@ -2,13 +2,16 @@
 package com.sanoxy.service;
 
 import com.sanoxy.dao.user.User;
-import com.sanoxy.dao.user.UserDatabase;
-import com.sanoxy.repository.user.UserDatabaseRepository;
+import com.sanoxy.dao.user.UserJoinWorkspace;
+import com.sanoxy.repository.user.UserJoinWorkspaceRepository;
 import com.sanoxy.repository.user.UserRepository;
 import com.sanoxy.service.exception.DuplicatedUserException;
 import com.sanoxy.service.exception.UserNotExistException;
+import com.sanoxy.service.util.IdentityInfo;
 import com.sanoxy.service.util.UserIdentity;
-import java.util.List;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.naming.AuthenticationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -24,10 +27,10 @@ public class UserServiceImpl implements UserService {
         private UserRepository userRepository;
         
         @Autowired
-        private UserDatabaseRepository userDatabaseRepository;
+        private UserJoinWorkspaceRepository userJoinWorkspaceRepository;
         
         @Autowired
-        private UserSessionService userSessionService;
+        private IdentitySessionService userSessionService;
         
         PasswordEncoder encoder = new BCryptPasswordEncoder();
         
@@ -38,22 +41,12 @@ public class UserServiceImpl implements UserService {
                 
                 String encryptedPasscode = encoder.encode(passcode);
                 
-                User user = new User(userName, "[]", encryptedPasscode);
+                User user = new User(userName, encryptedPasscode);
                 userRepository.save(user);
-        }
-        
-        private UserDatabase findDatabaseByName(List<UserDatabase> databases, String name) {
-                if (databases == null)
-                        return null;
-                for (UserDatabase db: databases) {
-                        if (db.getName().equals(name))
-                                return db;
-                }
-                return null;
         }
 
         @Override
-        public UserIdentity authenticate(String dbName, String userName, String passcode) throws UserNotExistException,
+        public UserIdentity authenticate(String workspaceName, String userName, String passcode) throws UserNotExistException,
                                                                                                  AuthenticationException {
                 User user = userRepository.findByName(userName);
                 if (user == null)
@@ -63,22 +56,35 @@ public class UserServiceImpl implements UserService {
                         throw new AuthenticationException("Password does not match");
                 
                 UserIdentity identity;
-                if (dbName.equals("imaginarydb")) {
-                        identity = new UserIdentity(-1);
+                if (workspaceName.equals("imaginarydb")) {
+                        identity = new UserIdentity();
+                        try {
+                                userSessionService.putIdentityInfo(identity.getUid(), new IdentityInfo(user, null, "[]"));
+                        } catch (IOException ex) {
+                                Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                 } else {
-                        UserDatabase database = findDatabaseByName(user.getUserDatabases(), dbName);
-                        if (database == null)
-                                throw new UserNotExistException("User " + userName + " is not part of " + dbName);
-                        identity = new UserIdentity(database.getDbid());
+                        UserJoinWorkspace userJoinWorkspace = 
+                                userJoinWorkspaceRepository.findUserJoinWorkspaceByUidAndName(user.getUid(), workspaceName);
+                        
+                        if (userJoinWorkspace == null)
+                                throw new UserNotExistException("User " + userName + " is not part of " + workspaceName);
+                        identity = new UserIdentity();
+                        
+                        IdentityInfo info = null;
+                        try {
+                                info = new IdentityInfo(user, userJoinWorkspace.getWorkspace(), userJoinWorkspace.getPermissionsJson());
+                        } catch (IOException ex) {
+                                Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        userSessionService.putIdentityInfo(identity.getUid(), info);
                 }
-                
-                userSessionService.setUser(identity.getUid(), user);
                 return identity;
         }
 
         @Override
         public void logout(UserIdentity identity) {
-                userSessionService.removeUser(identity.getUid());
+                userSessionService.removeIdentityInfo(identity.getUid());
         }
         
 }

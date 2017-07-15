@@ -3,7 +3,6 @@ package com.sanoxy.controller;
 import com.sanoxy.controller.request.user.CreateUserRequest;
 import com.sanoxy.controller.request.user.LogInRequest;
 import com.sanoxy.controller.request.user.LogoutRequest;
-import com.sanoxy.controller.response.DatabaseConnectionResponse;
 import com.sanoxy.controller.response.Response;
 import com.sanoxy.controller.response.Response.Status;
 import com.sanoxy.controller.response.UserIdentityResponse;
@@ -46,14 +45,14 @@ public class UserController {
         /*
 	 * Log the user in the session
          */
-        @RequestMapping(value = {"/login/{db_name}", ""}, method = RequestMethod.POST)
+        @RequestMapping(value = {"/login/{workspace}", ""}, method = RequestMethod.POST)
         @ResponseBody
         public UserIdentityResponse logIn(@RequestBody LogInRequest request, 
-                                          @PathVariable("db_name") String db_name) throws InvalidRequestException, 
+                                          @PathVariable("workspace") String workspace) throws InvalidRequestException, 
                                                                                     UserNotExistException, 
                                                                                     AuthenticationException {
                 request.validate();
-                UserIdentity identity = userService.authenticate(db_name, request.getUsername(), request.getPassword());
+                UserIdentity identity = userService.authenticate(workspace, request.getUsername(), request.getPassword());
                 return new UserIdentityResponse(identity);
         }
 
@@ -66,12 +65,5 @@ public class UserController {
                 request.validate();
                 userService.logout(request.getUserIdentity());
                 return new Response(Status.Success);
-        }
-
-        
-        @RequestMapping(value = {"/connection/{db_name}", ""}, method = RequestMethod.GET)
-        @ResponseBody
-        public DatabaseConnectionResponse validateConnection(@PathVariable("db_name") String db_name) {
-                return new DatabaseConnectionResponse(0);
         }
 }

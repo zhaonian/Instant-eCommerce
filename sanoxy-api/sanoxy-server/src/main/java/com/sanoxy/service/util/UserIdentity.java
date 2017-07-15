@@ -7,15 +7,11 @@ import java.util.UUID;
 /**
  * @author davis
  */
-public class UserIdentity extends DatabaseConnection {
+public class UserIdentity {
         
         private String uid;
-	
-        public UserIdentity() {
-	}
         
-	public UserIdentity(Integer dbid) {
-                super(dbid);
+	public UserIdentity() {
 		this.uid = UUID.randomUUID().toString();
 	}
 

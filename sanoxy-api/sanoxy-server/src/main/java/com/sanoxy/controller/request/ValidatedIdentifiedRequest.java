@@ -33,8 +33,5 @@ public abstract class ValidatedIdentifiedRequest implements ValidatedRequest {
                 if (userIdentity.getUid() == null || userIdentity.getUid().isEmpty()) {
 			throw new InvalidRequestException("User id is invalid");
 		}
-                if (userIdentity.getDbid() == null) {
-                        throw new InvalidRequestException("Database id is invalid");
-                }
         }
 }

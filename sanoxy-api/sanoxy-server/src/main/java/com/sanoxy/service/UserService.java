@@ -12,7 +12,7 @@ import javax.naming.AuthenticationException;
 public interface UserService {
         
         public void createNew(String userName, String passcode) throws DuplicatedUserException;
-        public UserIdentity authenticate(String dbName, String userName, String passcode) throws UserNotExistException,
+        public UserIdentity authenticate(String workspaceName, String userName, String passcode) throws UserNotExistException,
                                                                                                  AuthenticationException;
         public void logout(UserIdentity identity);
 }

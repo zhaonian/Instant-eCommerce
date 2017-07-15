@@ -4,13 +4,13 @@ package com.sanoxy.service.util;
 /**
  * @author davis
  */
-public class DatabaseConnection {
+public class WorkspaceConnection {
         
         private Integer dbid;
 	
-	public DatabaseConnection() { };
+	public WorkspaceConnection() { };
 	
-	public DatabaseConnection(Integer dbid) {
+	public WorkspaceConnection(Integer dbid) {
                 this.dbid = dbid;
 	}
         

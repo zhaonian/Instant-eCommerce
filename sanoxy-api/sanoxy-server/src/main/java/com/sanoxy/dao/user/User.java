@@ -4,12 +4,13 @@ package com.sanoxy.dao.user;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -18,13 +19,10 @@ import org.hibernate.validator.constraints.NotEmpty;
 @Entity
 @Table(name = "users")
 public class User implements Serializable {
-
-        @ManyToMany
-        private List<UserDatabase> userDatabases;
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
+	private Integer uid;
         
 	@NotNull
         @NotEmpty
@@ -33,28 +31,25 @@ public class User implements Serializable {
         
         @NotNull
         @NotEmpty
-        private String permissionsJson;
-        
-        @NotNull
-        @NotEmpty
         private String encryptedPasscode;
         
+        @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+        List<UserJoinWorkspace> userJoinWorkspaces;
         
         public User() {
         }
         
-        public User(String name, String permissionsJson, String encryptedPasscode) {
+        public User(String name, String encryptedPasscode) {
                 this.name = name;
-                this.permissionsJson = permissionsJson;
                 this.encryptedPasscode = encryptedPasscode;
         }
 	
-	public Integer getId() {
-		return id;
+	public Integer getUid() {
+		return uid;
 	}
         
-	public void setId(Integer id) {
-		this.id = id;
+	public void setUid(Integer id) {
+		this.uid = id;
 	}
 	
 	public String getName() {
@@ -65,14 +60,6 @@ public class User implements Serializable {
 		this.name = name;
 	}
         
-        public String getPermissionsJson() {
-                return this.permissionsJson;
-        }
-        
-        public void setPermissionsJson(String permissionsJson) {
-                this.permissionsJson = permissionsJson;
-        }
-        
         public String getEncryptedPasscode() {
                 return this.encryptedPasscode;
         }
@@ -81,18 +68,18 @@ public class User implements Serializable {
                 this.encryptedPasscode = encryptedPasscode;
         }
         
-        public List<UserDatabase> getUserDatabases() {
-                return this.userDatabases;
+        public List<UserJoinWorkspace> getUserJoinWorkspaces() {
+                return this.userJoinWorkspaces;
         }
         
-        public void setUserDatabases(List<UserDatabase> userDatabases) {
-                this.userDatabases = userDatabases;
+        public void setUserJoinWorkspace(List<UserJoinWorkspace> userJoinWorkspaces) {
+                this.userJoinWorkspaces = userJoinWorkspaces;
         }
-
+        
         @Override
         public int hashCode() {
                 int hash = 3;
-                hash = 53 * hash + Objects.hashCode(this.id);
+                hash = 53 * hash + Objects.hashCode(this.uid);
                 return hash;
         }
         
@@ -101,6 +88,6 @@ public class User implements Serializable {
                 if (!(o instanceof User))
                         return false;
                 User rhs = (User) o;
-                return id.equals(rhs.id);
+                return uid.equals(rhs.uid);
         }
 }
