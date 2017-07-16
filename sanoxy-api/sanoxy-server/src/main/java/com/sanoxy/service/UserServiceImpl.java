@@ -78,7 +78,7 @@ public class UserServiceImpl implements UserService {
                         }
                 } else {
                         UserJoinWorkspace userJoinWorkspace = 
-                                userJoinWorkspaceRepository.findUserJoinWorkspaceByUidAndName(user.getUid(), workspaceName);
+                                userJoinWorkspaceRepository.findByUserUidAndWorkspaceName(user.getUid(), workspaceName);
                         
                         if (userJoinWorkspace == null)
                                 throw new UserNotExistException("User " + userName + " is not part of " + workspaceName);

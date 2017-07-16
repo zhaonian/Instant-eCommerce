@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanoxy.configuration.Constants;
 import com.sanoxy.dao.user.User;
+import com.sanoxy.dao.user.UserJoinWorkspace;
 import com.sanoxy.dao.user.Workspace;
 import com.sanoxy.repository.user.UserJoinWorkspaceRepository;
 import com.sanoxy.repository.user.UserRepository;
@@ -12,7 +13,6 @@ import com.sanoxy.repository.user.WorkspaceRepository;
 import com.sanoxy.service.exception.DuplicatedWorkspaceException;
 import com.sanoxy.service.util.IdentityInfo;
 import com.sanoxy.service.util.Permission;
-import com.sanoxy.service.util.WorkspacePermission;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
@@ -20,6 +20,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,7 +40,10 @@ public class WorkspaceServiceImpl implements WorkspaceService {
        WorkspaceRepository workspaceRepository;
        
        @Autowired
-       UserJoinWorkspaceRepository userWorkspaceRepository;
+       UserJoinWorkspaceRepository userJoinWorkspaceRepository;
+       
+       @PersistenceContext
+       private EntityManager entityManager;
        
        PasswordEncoder encoder = new BCryptPasswordEncoder();
        
@@ -83,27 +88,37 @@ public class WorkspaceServiceImpl implements WorkspaceService {
        
        @Override
        public void deleteWorkspace(Integer wid) {
+               workspaceRepository.deleteByWid(wid);
        }
        
        @Override
        public List<User> getWorkspaceUsers(Integer wid) {
-               return null;
+               return userJoinWorkspaceRepository.findUserByWorkspaceWid(wid);
        }
        
        @Override
        public Set<Permission> getUserWorkspacePermission(Integer wid, Integer uid) {
-               return null;
+               return userJoinWorkspaceRepository.findByUserUidAndWorkspaceWid(uid, wid).getPermissions();
        }
        
        @Override
-       public void addUserToWorkspace(Integer wid, Integer uid, Set<WorkspacePermission> perms) {
+       public void addUserToWorkspace(Integer wid, Integer uid, Set<Permission> perms) {
+               User user = entityManager.getReference(User.class, uid);
+               Workspace workspace = entityManager.getReference(Workspace.class, wid);
+               try {
+                       userJoinWorkspaceRepository.save(new UserJoinWorkspace(user, workspace, perms));
+               } catch (JsonProcessingException ex) {
+                       Logger.getLogger(WorkspaceServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+               }
        }
        
        @Override
        public void removeUserToWorkspace(Integer wid, Integer uid) {
+               userJoinWorkspaceRepository.deleteByUserUidAndWorkspaceWid(uid, wid);
        }
        
        @Override
-       public void changeUserWorkspacePermission(Integer wid, Integer uid, Set<WorkspacePermission> perms) {
+       public void changeUserWorkspacePermission(Integer wid, Integer uid, Set<Permission> perms) {
+               addUserToWorkspace(wid, uid, perms);
        }
 }

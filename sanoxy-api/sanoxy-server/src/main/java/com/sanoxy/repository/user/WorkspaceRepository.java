@@ -13,4 +13,6 @@ public interface WorkspaceRepository extends CrudRepository<Workspace, Integer> 
         public Workspace findByName(String name);
 
         public boolean existsByName(String name);
+
+        public Long deleteByWid(Integer wid);
 }

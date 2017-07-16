@@ -28,31 +28,20 @@ import org.hibernate.validator.constraints.NotEmpty;
 @Entity
 @Table(name = "users")
 public class User implements Serializable {
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+        
 	private Integer uid;
-        
-	@NotNull
-        @NotEmpty
-        @Column(unique=true)
 	private String name;
-        
-        @NotNull
-        @NotEmpty
         private String encryptedPasscode;
-        
-        @NotNull
-        @NotEmpty
         private String userPermissionsJson;
-        
-        @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
         List<UserJoinWorkspace> userJoinWorkspaces;
         
-        @Transient
         ObjectMapper mapper = new ObjectMapper();
         
         public User() {
+        }
+        
+        public User(Integer uid) {
+                this.uid = uid;
         }
         
         public User(String name, String encryptedPasscode, Set<Permission> userPermissions) throws JsonProcessingException {
@@ -61,6 +50,8 @@ public class User implements Serializable {
                 this.userPermissionsJson = mapper.writeValueAsString(userPermissions);
         }
 	
+        @Id
+        @GeneratedValue(strategy = GenerationType.AUTO)
 	public Integer getUid() {
 		return uid;
 	}
@@ -69,6 +60,9 @@ public class User implements Serializable {
 		this.uid = id;
 	}
 	
+        @NotNull
+        @NotEmpty
+        @Column(unique=true)
 	public String getName() {
 		return name;
 	}
@@ -77,19 +71,32 @@ public class User implements Serializable {
 		this.name = name;
 	}
         
+        @NotNull
+        @NotEmpty
         public String getEncryptedPasscode() {
                 return this.encryptedPasscode;
         }
         
-        public void setEncrpytedPasscode(String encryptedPasscode) {
+        public void setEncryptedPasscode(String encryptedPasscode) {
                 this.encryptedPasscode = encryptedPasscode;
         }
         
+        @NotNull
+        @NotEmpty
+        public String getUserPermissionsJson() {
+                return this.userPermissionsJson;
+        }
+        
+        public void setUserPermissionsJson(String userPermissionsJson) {
+                this.userPermissionsJson = userPermissionsJson;
+        }
+        
+        @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
         public List<UserJoinWorkspace> getUserJoinWorkspaces() {
                 return this.userJoinWorkspaces;
         }
         
-        public void setUserJoinWorkspace(List<UserJoinWorkspace> userJoinWorkspaces) {
+        public void setUserJoinWorkspaces(List<UserJoinWorkspace> userJoinWorkspaces) {
                 this.userJoinWorkspaces = userJoinWorkspaces;
         }
         
@@ -106,6 +113,11 @@ public class User implements Serializable {
                         return false;
                 User rhs = (User) o;
                 return uid.equals(rhs.uid);
+        }
+        
+        @Transient
+        private ObjectMapper getMapper() {
+                return this.mapper;
         }
 
         @Transient

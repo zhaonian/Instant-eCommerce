@@ -8,9 +8,10 @@ package com.sanoxy.controller.request.inventory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanoxy.controller.request.ValidatedIdentifiedRequest;
-import com.sanoxy.service.exception.InvalidRequestException;
 import com.sanoxy.dao.inventory.Inventory;
 import com.sanoxy.dao.inventory.InventoryCategory;
+import com.sanoxy.service.exception.InvalidRequestException;
+import com.sanoxy.service.util.UserIdentity;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +34,8 @@ public class AddInventoryRequest extends ValidatedIdentifiedRequest {
         public AddInventoryRequest() {
         }
         
-        public AddInventoryRequest(Float suggestPrice,
+        public AddInventoryRequest(UserIdentity identity,
+                                   Float suggestPrice,
                                    String ean,
                                    String title,
                                    String brand,
@@ -43,6 +45,7 @@ public class AddInventoryRequest extends ValidatedIdentifiedRequest {
                                    List<String> bullets,
                                    String keyword,
                                    List<String> imageUrls) {
+                super(identity);
                 this.suggestPrice = suggestPrice;
                 this.ean = ean;              
                 this.title = title;

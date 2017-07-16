@@ -8,7 +8,7 @@ import com.sanoxy.service.util.UserIdentity;
 /**
  * @author davis
  */
-public abstract class ValidatedIdentifiedRequest implements ValidatedRequest {
+public class ValidatedIdentifiedRequest implements ValidatedRequest {
         
         private UserIdentity userIdentity;
         

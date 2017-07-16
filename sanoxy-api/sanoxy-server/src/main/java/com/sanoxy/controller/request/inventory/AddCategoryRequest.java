@@ -7,6 +7,7 @@ package com.sanoxy.controller.request.inventory;
 
 import com.sanoxy.controller.request.ValidatedIdentifiedRequest;
 import com.sanoxy.service.exception.InvalidRequestException;
+import com.sanoxy.service.util.UserIdentity;
 
 /**
  *
@@ -19,7 +20,8 @@ public class AddCategoryRequest extends ValidatedIdentifiedRequest {
         public AddCategoryRequest() {
         }
         
-        public AddCategoryRequest(String categoryName) {
+        public AddCategoryRequest(UserIdentity identity, String categoryName) {
+                super(identity);
                 this.categoryName = categoryName;
         }
 
