@@ -3,6 +3,7 @@ package com.sanoxy.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sanoxy.configuration.Constants;
 import com.sanoxy.dao.user.User;
 import com.sanoxy.dao.user.Workspace;
 import com.sanoxy.repository.user.UserJoinWorkspaceRepository;
@@ -41,7 +42,12 @@ public class WorkspaceServiceImpl implements WorkspaceService {
        
        PasswordEncoder encoder = new BCryptPasswordEncoder();
        
-       public Set<Permission> genFullpermission() {
+       public Set<Permission> genFullWorkspacePermissions() {
+               Set<Permission> perms = new HashSet();
+               return perms;
+       }
+       
+       public Set<Permission> genFullUserPermissions() {
                Set<Permission> perms = new HashSet();
                return perms;
        }
@@ -53,14 +59,20 @@ public class WorkspaceServiceImpl implements WorkspaceService {
                Workspace workspace = new Workspace(name);
                workspaceRepository.save(workspace);
                
-               String userName = "/root/" + name;
+               String userName = Constants.ROOT_USER_PREFIX + name;
                String passcode = UUID.randomUUID().toString();
-               User root = new User(userName, encoder.encode(passcode));
+               User root;
+               try {
+                       root = new User(userName, encoder.encode(passcode), genFullUserPermissions());
+               } catch (JsonProcessingException ex) {
+                       Logger.getLogger(WorkspaceServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+                       return null;
+               }
                userRepository.save(root);
                
                ObjectMapper mapper = new ObjectMapper();
                try {
-                       return new IdentityInfo(root, workspace, mapper.writeValueAsString(genFullpermission()));
+                       return new IdentityInfo(root, workspace, mapper.writeValueAsString(genFullWorkspacePermissions()));
                } catch (JsonProcessingException ex) {
                        Logger.getLogger(WorkspaceServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
                } catch (IOException ex) {
@@ -79,7 +91,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
        }
        
        @Override
-       public Set<WorkspacePermission> getUserWorkspacePermission(Integer wid, Integer uid) {
+       public Set<Permission> getUserWorkspacePermission(Integer wid, Integer uid) {
                return null;
        }
        

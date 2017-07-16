@@ -9,6 +9,7 @@ import com.sanoxy.controller.response.UserIdentityResponse;
 import com.sanoxy.service.UserService;
 import com.sanoxy.service.exception.DuplicatedUserException;
 import com.sanoxy.service.exception.InvalidRequestException;
+import com.sanoxy.service.exception.PermissionDeniedException;
 import com.sanoxy.service.exception.UserNotExistException;
 import com.sanoxy.service.util.UserIdentity;
 import javax.naming.AuthenticationException;
@@ -34,9 +35,10 @@ public class UserController {
         @RequestMapping(value = {"/create", ""}, method = RequestMethod.POST)
         @ResponseBody
         public Response createUser(@RequestBody CreateUserRequest request) throws InvalidRequestException, 
-                                                                                              DuplicatedUserException, 
-                                                                                              UserNotExistException, 
-                                                                                              AuthenticationException {
+                                                                                  DuplicatedUserException, 
+                                                                                  PermissionDeniedException,
+                                                                                  UserNotExistException, 
+                                                                                  AuthenticationException {
                 request.validate();
                 userService.createNew(request.getUsername(), request.getPassword());
                 return new Response(Status.Success);

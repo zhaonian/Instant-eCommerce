@@ -1,15 +1,20 @@
 
 package com.sanoxy.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sanoxy.configuration.Constants;
 import com.sanoxy.dao.user.User;
 import com.sanoxy.dao.user.UserJoinWorkspace;
 import com.sanoxy.repository.user.UserJoinWorkspaceRepository;
 import com.sanoxy.repository.user.UserRepository;
 import com.sanoxy.service.exception.DuplicatedUserException;
+import com.sanoxy.service.exception.PermissionDeniedException;
 import com.sanoxy.service.exception.UserNotExistException;
 import com.sanoxy.service.util.IdentityInfo;
 import com.sanoxy.service.util.UserIdentity;
+import com.sanoxy.service.util.UserPermission;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.AuthenticationException;
@@ -35,17 +40,22 @@ public class UserServiceImpl implements UserService {
         PasswordEncoder encoder = new BCryptPasswordEncoder();
         
         @Override
-        public void createNew(String userName, String passcode) throws DuplicatedUserException {
-                if (userName.startsWith("master_"))
-                        throw new DuplicatedUserException();
+        public void createNew(String userName, String passcode) throws DuplicatedUserException, PermissionDeniedException {
+                if (userName.startsWith(Constants.ROOT_USER_PREFIX))
+                        throw new PermissionDeniedException(UserPermission.CreateAdministrator.getPermission());
                 
                 if (userRepository.existsByName(userName))
                         throw new DuplicatedUserException();
                 
                 String encryptedPasscode = encoder.encode(passcode);
                 
-                User user = new User(userName, encryptedPasscode);
-                userRepository.save(user);
+                User user;
+                try {
+                        user = new User(userName, encryptedPasscode, new HashSet<>());
+                        userRepository.save(user);
+                } catch (JsonProcessingException ex) {
+                        Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+                }
         }
 
         @Override
@@ -89,5 +99,4 @@ public class UserServiceImpl implements UserService {
         public void logout(UserIdentity identity) {
                 userSessionService.removeIdentityInfo(identity.getUid());
         }
-        
 }
