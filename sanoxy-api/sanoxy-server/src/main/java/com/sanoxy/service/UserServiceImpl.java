@@ -2,6 +2,8 @@
 package com.sanoxy.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanoxy.configuration.Constants;
 import com.sanoxy.dao.user.User;
 import com.sanoxy.dao.user.UserJoinWorkspace;
@@ -11,10 +13,12 @@ import com.sanoxy.service.exception.DuplicatedUserException;
 import com.sanoxy.service.exception.PermissionDeniedException;
 import com.sanoxy.service.exception.UserNotExistException;
 import com.sanoxy.service.util.IdentityInfo;
+import com.sanoxy.service.util.Permission;
 import com.sanoxy.service.util.UserIdentity;
 import com.sanoxy.service.util.UserPermission;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.AuthenticationException;
@@ -36,6 +40,7 @@ public class UserServiceImpl implements UserService {
         private IdentitySessionService userSessionService;
         
         PasswordEncoder encoder = new BCryptPasswordEncoder();
+        ObjectMapper mapper = new ObjectMapper();
         
         @Override
         public void createNew(String userName, String passcode) throws DuplicatedUserException, PermissionDeniedException {
@@ -66,14 +71,13 @@ public class UserServiceImpl implements UserService {
                 if (!encoder.matches(passcode, user.getEncryptedPasscode())) 
                         throw new AuthenticationException("Password does not match");
                 
+               
+                
                 UserIdentity identity;
                 if (workspaceName.equals("imaginarydb")) {
                         identity = new UserIdentity();
-                        try {
-                                userSessionService.putIdentityInfo(identity.getUid(), new IdentityInfo(user, null, "[]"));
-                        } catch (IOException ex) {
-                                Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+                        userSessionService.putIdentityInfo(identity.getUid(), new IdentityInfo(user, null, user.getUserPermissions()));
+
                 } else {
                         UserJoinWorkspace userJoinWorkspace = 
                                 userJoinWorkspaceRepository.findByUserUidAndWorkspaceName(user.getUid(), workspaceName);
@@ -81,13 +85,9 @@ public class UserServiceImpl implements UserService {
                         if (userJoinWorkspace == null)
                                 throw new UserNotExistException("User " + userName + " is not part of " + workspaceName);
                         identity = new UserIdentity();
-                        
-                        IdentityInfo info = null;
-                        try {
-                                info = new IdentityInfo(user, userJoinWorkspace.getWorkspace(), userJoinWorkspace.getPermissionsJson());
-                        } catch (IOException ex) {
-                                Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+                        Set<Permission> perms = user.getUserPermissions();
+                        perms.addAll(userJoinWorkspace.getPermissions());
+                        IdentityInfo info = new IdentityInfo(user, userJoinWorkspace.getWorkspace(), perms);
                         userSessionService.putIdentityInfo(identity.getUid(), info);
                 }
                 return identity;
@@ -96,5 +96,21 @@ public class UserServiceImpl implements UserService {
         @Override
         public void logout(UserIdentity identity) {
                 userSessionService.removeIdentityInfo(identity.getUid());
+        }
+        
+        @Override
+        public Set<Permission> getUserPermissions(Integer uid) {
+                String json = userRepository.getUserPermissionsJsonByUid(uid);
+                try {
+                        return mapper.readValue(json, new TypeReference<Set<Permission>>() {});
+                } catch (IOException ex) {
+                        Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                return null;
+        }
+        
+        @Override
+        public IdentityInfo getIdentityInfo(UserIdentity identity) {
+                return userSessionService.getIdentityInfo(identity.getUid());
         }
 }

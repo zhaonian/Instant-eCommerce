@@ -10,8 +10,10 @@ import com.sanoxy.controller.response.UserIdentityResponse;
 import com.sanoxy.dao.user.User;
 import com.sanoxy.repository.user.UserRepository;
 import com.sanoxy.service.IdentitySessionService;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MvcResult;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -62,5 +64,11 @@ public class SanoxyControllerTest extends ControllerTest {
         
         protected User getRequestedNewUser() throws Exception {
                 return userRepository.findByName("test-user");
+        }
+        
+        @Test
+        public void validateConnectionTest() throws Exception {
+                mockMvc.perform(get("/api/test_connection"))
+                        .andExpect(status().isOk());
         }
 }

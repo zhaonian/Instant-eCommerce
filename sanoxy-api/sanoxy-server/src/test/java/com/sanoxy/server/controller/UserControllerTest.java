@@ -48,10 +48,4 @@ public class UserControllerTest extends SanoxyControllerTest {
                 
                 assertNull(userSessionService.getIdentityInfo(iid.getUserIdentity().getUid()));
         }
-
-        @Test
-        public void validateConnectionTest() throws Exception {
-                /*mockMvc.perform(get("/api/user/connection/sanoxy"))
-                        .andExpect(jsonPath("$.dbid", is("sanoxy")));*/
-        }
 }
