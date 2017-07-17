@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.sanoxy.repository.inventory;
 
 import com.sanoxy.dao.inventory.Inventory;
@@ -16,10 +12,7 @@ import org.hibernate.search.jpa.Search;
 import org.hibernate.search.query.dsl.QueryBuilder;
 import org.springframework.stereotype.Repository;
 
-/**
- *
- * @author davis
- */
+
 @Repository
 @Transactional
 public class InventoryRepositoryImpl implements InventoryRepositoryFulltext {

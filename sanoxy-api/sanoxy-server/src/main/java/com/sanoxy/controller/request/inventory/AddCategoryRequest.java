@@ -1,18 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.sanoxy.controller.request.inventory;
 
 import com.sanoxy.controller.request.ValidatedIdentifiedRequest;
 import com.sanoxy.service.exception.InvalidRequestException;
 import com.sanoxy.service.util.UserIdentity;
 
-/**
- *
- * @author luan
- */
+
 public class AddCategoryRequest extends ValidatedIdentifiedRequest {
         
         private String categoryName;

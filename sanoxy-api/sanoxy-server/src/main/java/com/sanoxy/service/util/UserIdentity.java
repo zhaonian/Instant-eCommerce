@@ -4,9 +4,7 @@ package com.sanoxy.service.util;
 import java.util.Objects;
 import java.util.UUID;
 
-/**
- * @author davis
- */
+
 public class UserIdentity {
         
         private String uid;

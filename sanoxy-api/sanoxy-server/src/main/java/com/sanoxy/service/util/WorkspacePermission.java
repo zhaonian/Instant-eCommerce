@@ -1,8 +1,6 @@
 package com.sanoxy.service.util;
 
-/**
- * @author davis
- */
+
 public enum WorkspacePermission {
         ReadInventory("Inventory", "access inventory", 1),
         DeleteInventory("Inventory", "delete inventory", 2),

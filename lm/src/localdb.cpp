@@ -10,7 +10,7 @@ core::localdb::localdb(central_server& server, identity const& id):
 std::string
 core::localdb::connection_name() const
 {
-        return m_server.connection_name();
+        return m_id.workspace_name();
 }
 
 std::string

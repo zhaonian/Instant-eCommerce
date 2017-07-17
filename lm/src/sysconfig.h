@@ -18,6 +18,9 @@ public:
         unsigned        get_host_port() const;
         void            set_host_port(unsigned port);
 
+        std::string     get_login_workspace() const;
+        void            set_login_workspace(std::string const& database);
+
         std::string     get_login_user_name() const;
         void            set_login_user_name(std::string const& u);
 

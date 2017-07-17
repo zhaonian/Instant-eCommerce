@@ -4,9 +4,7 @@ package com.sanoxy.service.util;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.util.Objects;
 
-/**
- * @author davis
- */
+
 public class Permission {
         
         private String permissionCategory;

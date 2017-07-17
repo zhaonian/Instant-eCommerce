@@ -5,9 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sanoxy.service.exception.InvalidRequestException;
 import com.sanoxy.service.util.UserIdentity;
 
-/**
- * @author davis
- */
+
 public class ValidatedIdentifiedRequest implements ValidatedRequest {
         
         private UserIdentity userIdentity;

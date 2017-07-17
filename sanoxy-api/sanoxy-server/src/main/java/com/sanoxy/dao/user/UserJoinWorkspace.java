@@ -19,9 +19,7 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.NotEmpty;
 
-/**
- * @author davis
- */
+
 @Entity
 @Table(name = "user_join_workspace")
 public class UserJoinWorkspace implements Serializable {

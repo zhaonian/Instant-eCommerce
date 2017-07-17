@@ -8,9 +8,7 @@ import com.sanoxy.service.util.Permission;
 import java.util.List;
 import java.util.Set;
 
-/**
- * @author davis
- */
+
 public interface WorkspaceService {
        public IdentityInfo createNewWorkspace(String name) throws DuplicatedWorkspaceException;
        public void deleteWorkspace(Integer wid);

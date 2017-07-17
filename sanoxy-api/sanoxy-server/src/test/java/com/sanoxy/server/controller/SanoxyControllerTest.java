@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.sanoxy.server.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,10 +15,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- *
- * @author davis
- */
+
 public class SanoxyControllerTest extends ControllerTest {
         
         @Autowired

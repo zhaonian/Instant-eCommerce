@@ -21,11 +21,10 @@ class central_server
 public:
         central_server();
 
-        bool            connect(std::string const& db_name, std::string const& host_name, unsigned port);
+        bool            connect(std::string const& host_name, unsigned port);
         bool            is_connected() const;
         bool            send_json_request(json_t& data, std::string const& path, request_type type, json_t const& json);
         std::string     error() const;
-        std::string     connection_name() const;
 private:
         bool                            m_is_connected = false;
         std::string                     m_host_name;

@@ -6,9 +6,7 @@ import com.sanoxy.dao.user.UserJoinWorkspace;
 import java.util.List;
 import org.springframework.data.repository.CrudRepository;
 
-/**
- * @author davis
- */
+
 public interface UserJoinWorkspaceRepository extends CrudRepository<UserJoinWorkspace, Integer> {
 
         public UserJoinWorkspace findByUserUidAndWorkspaceName(Integer uid, String name);

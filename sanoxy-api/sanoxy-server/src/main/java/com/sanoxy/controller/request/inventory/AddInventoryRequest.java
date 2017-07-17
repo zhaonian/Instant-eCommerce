@@ -1,8 +1,4 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package com.sanoxy.controller.request.inventory;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,9 +11,7 @@ import com.sanoxy.service.util.UserIdentity;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author luan
- */
+
 public class AddInventoryRequest extends ValidatedIdentifiedRequest {
 
 	private Float suggestPrice;

@@ -7,9 +7,7 @@ import com.sanoxy.service.exception.UserNotExistException;
 import com.sanoxy.service.util.UserIdentity;
 import javax.naming.AuthenticationException;
 
-/**
- * @author davis
- */
+
 public interface UserService {
         
         public void createNew(String userName, String passcode) throws DuplicatedUserException, PermissionDeniedException;

@@ -8,9 +8,7 @@ import com.sanoxy.dao.user.Workspace;
 import java.io.IOException;
 import java.util.Set;
 
-/**
- * @author davis
- */
+
 public class IdentityInfo {
         
         private final User user;

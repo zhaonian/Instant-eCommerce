@@ -3,9 +3,7 @@ package com.sanoxy.service.exception;
 
 import com.sanoxy.service.util.Permission;
 
-/**
- * @author davis
- */
+
 public class PermissionDeniedException extends Exception {
         
         private static final long serialVersionUID = 1L;

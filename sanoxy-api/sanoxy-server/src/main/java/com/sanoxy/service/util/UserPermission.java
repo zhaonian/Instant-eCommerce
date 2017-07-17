@@ -1,9 +1,7 @@
 
 package com.sanoxy.service.util;
 
-/**
- * @author davis
- */
+
 public enum UserPermission {
         AddUserToWorkspace("Workspace", "add user to workspace", 1),
         RemoveUserFromWorkspace("Workspace", "remove user from workspace", 2),

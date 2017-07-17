@@ -1,9 +1,7 @@
 
 package com.sanoxy.service.util;
 
-/**
- * @author davis
- */
+
 public class WorkspaceConnection {
         
         private Integer dbid;

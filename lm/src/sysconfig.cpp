@@ -74,6 +74,23 @@ core::sysconfig::set_host_port(unsigned port)
 }
 
 std::string
+core::sysconfig::get_login_workspace() const
+{
+        auto it = m_attributes.find("workspace");
+        if (it == m_attributes.end())
+                return "";
+        else
+                return it->second;
+}
+
+void
+core::sysconfig::set_login_workspace(std::string const& workspace)
+{
+        m_attributes["workspace"] = workspace;
+        save_map(m_attributes, m_path);
+}
+
+std::string
 core::sysconfig::get_login_user_name() const
 {
         auto it = m_attributes.find("user_name");

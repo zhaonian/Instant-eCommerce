@@ -7,10 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 
-/**
- *
- * @author luan
- */
+
 public interface InventoryRepository extends CrudRepository<Inventory, Integer>, InventoryRepositoryFulltext {
 	@Query(value="SELECT * "
 			+ "FROM inventory AS I, inventory_category AS IC "

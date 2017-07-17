@@ -158,13 +158,24 @@ core::central_server::central_server()
 
 
 bool
-core::central_server::connect(std::string const& db_name, std::string const& host_name, unsigned port)
+core::central_server::connect(std::string const& host_name, unsigned port)
 {
         m_host_name = host_name;
         m_port = port;
 
-        send_json_request(m_connection, "/api/user/connection/" + db_name, request_type::get, json_t());
-        m_is_connected = m_error.empty();
+        send_json_request(m_connection, "/api/workspace/connection/test", request_type::get, json_t());
+        if (m_error.empty()) {
+                try {
+                        if (m_connection.get<std::string>("status") == "1")
+                                m_is_connected = true;
+                } catch (...) {
+                        m_error = "Invalid status";
+                        m_is_connected = false;
+                }
+        } else {
+                m_is_connected = false;
+        }
+
         return m_is_connected;
 }
 
@@ -185,12 +196,6 @@ std::string
 core::central_server::error() const
 {
         return m_error;
-}
-
-std::string
-core::central_server::connection_name() const
-{
-        return m_connection.get<std::string>("dbName");
 }
 
 
