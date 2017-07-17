@@ -1,29 +1,20 @@
-# README #
+## Instant eCommerce
 
-This README would normally document whatever steps are necessary to get your application up and running.
+### Notes:
+* [draw.io for DB design](https://drive.google.com/file/d/0BzSUKvnh_D9UVmFwbHNwVERQSDA/view?usp=sharing)
 
-### What is this repository for? ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+### What is this repository for? 
+* An automation system for eCommerce
 
-### How do I get set up? ###
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+### Who do I talk to?
+* [Davis](https://www.github.com/daviesX)
+* [Luan](https://www.github.com/zhaonian)
 
-### Contribution guidelines ###
 
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+### What technologies used?
+* QT
+* Maven
+* Spring Boot
+* postgreSQL
