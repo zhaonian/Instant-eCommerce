@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 
 @Controller
-@RequestMapping(value = "api/", produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(value = "api", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class SanoxyController {
         
         @RequestMapping(value = {"/test_connection", ""}, method = RequestMethod.GET)
