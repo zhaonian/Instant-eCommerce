@@ -5,7 +5,6 @@ import com.sanoxy.controller.request.user.LogInRequest;
 import com.sanoxy.controller.request.user.LogoutRequest;
 import com.sanoxy.controller.response.Response;
 import com.sanoxy.controller.response.Response.Status;
-import com.sanoxy.controller.response.UserIdentityResponse;
 import com.sanoxy.service.UserService;
 import com.sanoxy.service.exception.DuplicatedUserException;
 import com.sanoxy.service.exception.InvalidRequestException;
@@ -49,13 +48,13 @@ public class UserController {
          */
         @RequestMapping(value = {"/login/{workspace}", ""}, method = RequestMethod.POST)
         @ResponseBody
-        public UserIdentityResponse logIn(@RequestBody LogInRequest request, 
+        public UserIdentity logIn(@RequestBody LogInRequest request, 
                                           @PathVariable("workspace") String workspace) throws InvalidRequestException, 
                                                                                     UserNotExistException, 
                                                                                     AuthenticationException {
                 request.validate();
                 UserIdentity identity = userService.authenticate(workspace, request.getUsername(), request.getPassword());
-                return new UserIdentityResponse(identity);
+                return identity;
         }
 
         /*

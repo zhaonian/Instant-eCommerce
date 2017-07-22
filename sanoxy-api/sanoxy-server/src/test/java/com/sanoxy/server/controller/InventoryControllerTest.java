@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanoxy.controller.request.ValidatedIdentifiedRequest;
 import com.sanoxy.controller.request.inventory.AddCategoryRequest;
 import com.sanoxy.controller.request.inventory.AddInventoryRequest;
-import com.sanoxy.controller.response.UserIdentityResponse;
 import com.sanoxy.dao.inventory.InventoryCategory;
 import com.sanoxy.repository.inventory.InventoryCategoryRepository;
 import com.sanoxy.repository.inventory.InventoryRepository;
@@ -106,16 +105,16 @@ public class InventoryControllerTest extends SanoxyControllerTest {
                 final int n = 100;
                 
                 requestNewUser();
-                UserIdentityResponse response = requestNewUserLogin();
+                UserIdentity iid = requestNewUserLogin();
                 
                 // add.
-                requestAddCategories(response.getUserIdentity(), n);
-                List<InventoryCategory> cs = requestGetAllCategory(response.getUserIdentity());
+                requestAddCategories(iid, n);
+                List<InventoryCategory> cs = requestGetAllCategory(iid);
                 assertTrue(cs.size() == n);
                 
                 // delete.
                 requestDeleteCategories(cs);
-                cs = requestGetAllCategory(response.getUserIdentity());
+                cs = requestGetAllCategory(iid);
                 assertTrue(cs.isEmpty());
         }
         
@@ -126,7 +125,7 @@ public class InventoryControllerTest extends SanoxyControllerTest {
                 final int m = 100;
                 
                 requestNewUser();
-                UserIdentityResponse response = requestNewUserLogin();
+                UserIdentity iid = requestNewUserLogin();
                 
                 //requestAddAllInventories(response.getUserIdentity(), n, m);
         }

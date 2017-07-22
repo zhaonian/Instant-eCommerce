@@ -6,10 +6,10 @@ import com.sanoxy.configuration.ControllerTest;
 import com.sanoxy.controller.request.user.CreateUserRequest;
 import com.sanoxy.controller.request.user.LogInRequest;
 import com.sanoxy.controller.request.user.LogoutRequest;
-import com.sanoxy.controller.response.UserIdentityResponse;
 import com.sanoxy.dao.user.User;
 import com.sanoxy.repository.user.UserRepository;
 import com.sanoxy.service.IdentitySessionService;
+import com.sanoxy.service.util.UserIdentity;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +32,10 @@ public class SanoxyControllerTest extends ControllerTest {
         @Autowired
         protected IdentitySessionService userSessionService;
         
-        protected UserIdentityResponse responseToIdentity(MvcResult result) throws Exception {
+        protected UserIdentity responseToIdentity(MvcResult result) throws Exception {
                 String content = result.getResponse().getContentAsString();
                 ObjectMapper mapper = new ObjectMapper();
-                UserIdentityResponse iid = mapper.readValue(content, UserIdentityResponse.class);
+                UserIdentity iid = mapper.readValue(content, UserIdentity.class);
                 return iid;
         }
         
@@ -49,7 +49,7 @@ public class SanoxyControllerTest extends ControllerTest {
                         .andExpect(status().isOk());
         }
         
-        protected UserIdentityResponse requestNewUserLogin() throws Exception {
+        protected UserIdentity requestNewUserLogin() throws Exception {
                 LogInRequest logInRequest = new LogInRequest("test-user", "test-password");
                 MvcResult result = mockMvc.perform(post("/api/user/login/imaginarydb")
                         .content(json(logInRequest))
@@ -60,8 +60,8 @@ public class SanoxyControllerTest extends ControllerTest {
                 return responseToIdentity(result);
         }
         
-        protected void requestUserLogout(UserIdentityResponse iid) throws Exception {
-                LogoutRequest request = new LogoutRequest(iid.getUserIdentity());
+        protected void requestUserLogout(UserIdentity iid) throws Exception {
+                LogoutRequest request = new LogoutRequest(iid);
                 mockMvc.perform(post("/api/user/logout")
                         .content(json(request))
                         .contentType(MEDIA_TYPE))

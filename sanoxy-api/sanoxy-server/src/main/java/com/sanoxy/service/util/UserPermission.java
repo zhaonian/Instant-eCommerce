@@ -7,9 +7,10 @@ public enum UserPermission {
         RemoveUserFromWorkspace("Workspace", "remove user from workspace", 2),
         CreateWorkspace("Workspace", "Create workspace", 3),
         DeleteWorkspace("Workspace", "Delete workspace", 4),
-        ChangeUserPermissions("Administration", "change user permission", 5),
-        CreateAdministrator("Administration", "create administrator", 6),
-        CreatePermissionRule("Administration", "create permission rule", 7);
+        AccessWorkspace("Workspace", "Access workspace", 5),
+        ChangeUserPermissions("Administration", "change user permission", 6),
+        CreateAdministrator("Administration", "create administrator", 7),
+        CreatePermissionRule("Administration", "create permission rule", 8);
 
         
         private final String category;

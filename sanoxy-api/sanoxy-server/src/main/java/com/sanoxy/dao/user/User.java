@@ -1,6 +1,7 @@
 package com.sanoxy.dao.user;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -73,6 +74,7 @@ public class User implements Serializable {
         
         @NotNull
         @NotEmpty
+        @JsonIgnore
         public String getEncryptedPasscode() {
                 return this.encryptedPasscode;
         }

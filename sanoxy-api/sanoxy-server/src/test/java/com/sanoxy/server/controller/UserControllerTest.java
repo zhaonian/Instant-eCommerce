@@ -1,8 +1,8 @@
 
 package com.sanoxy.server.controller;
 
-import com.sanoxy.controller.response.UserIdentityResponse;
 import com.sanoxy.dao.user.User;
+import com.sanoxy.service.util.UserIdentity;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -32,10 +32,10 @@ public class UserControllerTest extends SanoxyControllerTest {
         @Rollback
         public void userLogInTest() throws Exception {
                 requestNewUser();
-                UserIdentityResponse iid = requestNewUserLogin();
+                UserIdentity iid = requestNewUserLogin();
                 
                 User user = getRequestedNewUser();
-                User loggedInUser = userSessionService.getIdentityInfo(iid.getUserIdentity().getUid()).getUser();
+                User loggedInUser = userSessionService.getIdentityInfo(iid.getUid()).getUser();
                 assertEquals(loggedInUser, user);
         }
 
@@ -43,9 +43,9 @@ public class UserControllerTest extends SanoxyControllerTest {
         @Rollback
         public void userLogIOutest() throws Exception {
                 requestNewUser();
-                UserIdentityResponse iid = requestNewUserLogin();
+                UserIdentity iid = requestNewUserLogin();
                 requestUserLogout(iid);
                 
-                assertNull(userSessionService.getIdentityInfo(iid.getUserIdentity().getUid()));
+                assertNull(userSessionService.getIdentityInfo(iid.getUid()));
         }
 }

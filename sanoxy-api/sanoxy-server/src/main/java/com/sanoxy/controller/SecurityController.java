@@ -2,9 +2,10 @@
 package com.sanoxy.controller;
 
 import com.sanoxy.controller.request.ValidatedIdentifiedRequest;
-import com.sanoxy.controller.response.PermissionSetResponse;
 import com.sanoxy.service.SecurityService;
 import com.sanoxy.service.exception.InvalidRequestException;
+import com.sanoxy.service.util.Permission;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -23,23 +24,23 @@ public class SecurityController {
         
         @RequestMapping(value = {"/get_all_permissons", ""}, method = RequestMethod.GET)
         @ResponseBody
-        public PermissionSetResponse getAllPermissions() {
-                return new PermissionSetResponse(securityService.getAllPermissions());
+        public Set<Permission> getAllPermissions() {
+                return securityService.getAllPermissions();
         }
         
         @RequestMapping(value = {"/view_current_permissions", ""}, method = RequestMethod.POST)
         @ResponseBody
-        public PermissionSetResponse viewCurrentPermission(@RequestBody ValidatedIdentifiedRequest request) throws InvalidRequestException {
+        public Set<Permission> viewCurrentPermission(@RequestBody ValidatedIdentifiedRequest request) throws InvalidRequestException {
                 request.validate();
-                return new PermissionSetResponse(securityService.getPermissions(request.getUserIdentity()));
+                return securityService.getPermissions(request.getUserIdentity());
         }
         
         @RequestMapping(value = {"/view_user_permissions/{workspaceId}/{userId}", ""}, method = RequestMethod.POST)
         @ResponseBody
-        public PermissionSetResponse viewUserPermission(@PathVariable("workspaceId") Integer workspaceId,
+        public Set<Permission> viewUserPermission(@PathVariable("workspaceId") Integer workspaceId,
                                                         @PathVariable("userId") Integer userId,
                                                         @RequestBody ValidatedIdentifiedRequest request) throws InvalidRequestException {
                 request.validate();
-                return new PermissionSetResponse(securityService.getPermissions(workspaceId, userId));
+                return securityService.getPermissions(workspaceId, userId);
         }
 }
