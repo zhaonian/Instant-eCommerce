@@ -13,7 +13,7 @@ import com.sanoxy.service.exception.InvalidRequestException;
 import com.sanoxy.service.exception.PermissionDeniedException;
 import com.sanoxy.service.util.IdentityInfo;
 import com.sanoxy.service.util.UserPermission;
-import java.util.List;
+import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -53,8 +53,10 @@ public class WorkspaceController {
                                                                                                DuplicatedWorkspaceException {
                 request.validate();
                 securityService.requirePermission(request.getUserIdentity(), UserPermission.DeleteWorkspace.getPermission());
-                workspaceService.deleteWorkspace(workspaceId);
-                return new Response(Status.Success);
+                if (workspaceService.deleteWorkspace(workspaceId))
+                        return new Response(Status.Success);
+                else
+                        return new Response(Status.Failed);
         }
         
         @RequestMapping(value = {"/user/add/{workspaceId}/{userId}", ""}, method = RequestMethod.POST)
@@ -66,13 +68,15 @@ public class WorkspaceController {
                                                                                                DuplicatedWorkspaceException {
                 request.validate();
                 securityService.requirePermission(request.getUserIdentity(), UserPermission.AddUserToWorkspace.getPermission());
-                workspaceService.addUserToWorkspace(workspaceId, userId, request.getPermissions());
-                return new Response(Status.Success);
+                if (workspaceService.addUserToWorkspace(workspaceId, userId, request.getPermissions()))
+                        return new Response(Status.Success);
+                else
+                        return new Response(Status.Failed);
         }
         
         @RequestMapping(value = {"/user/get/{workspaceId}", ""}, method = RequestMethod.GET)
         @ResponseBody
-        public List<User> getWorkspaceUsers(@PathVariable("workspaceId") Integer workspaceId,
+        public Collection<User> getWorkspaceUsers(@PathVariable("workspaceId") Integer workspaceId,
                                             @RequestBody ValidatedIdentifiedRequest request) throws InvalidRequestException, 
                                                                                                PermissionDeniedException,
                                                                                                DuplicatedWorkspaceException {
@@ -90,8 +94,10 @@ public class WorkspaceController {
                                                                                                DuplicatedWorkspaceException {
                 request.validate();
                 securityService.requirePermission(request.getUserIdentity(), UserPermission.RemoveUserFromWorkspace.getPermission());
-                workspaceService.removeUserToWorkspace(workspaceId, userId);
-                return new Response(Status.Success);
+                if (workspaceService.removeUserToWorkspace(workspaceId, userId))
+                        return new Response(Status.Success);
+                else
+                        return new Response(Status.Failed);
         }
         
         @RequestMapping(value = {"/user/permission/{workspaceId}/{userId}", ""}, method = RequestMethod.POST)
@@ -103,7 +109,9 @@ public class WorkspaceController {
                                                                                                DuplicatedWorkspaceException {
                 request.validate();
                 securityService.requirePermission(request.getUserIdentity(), UserPermission.ChangeUserPermissions.getPermission());
-                workspaceService.changeUserWorkspacePermission(workspaceId, userId, request.getPermissions());
-                return new Response(Status.Success);
+                if (workspaceService.changeUserWorkspacePermission(workspaceId, userId, request.getPermissions()))
+                        return new Response(Status.Success);
+                else
+                        return new Response(Status.Failed);
         }
 }

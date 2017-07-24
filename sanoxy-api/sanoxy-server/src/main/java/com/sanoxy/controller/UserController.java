@@ -53,6 +53,8 @@ public class UserController {
                                                                                     UserNotExistException, 
                                                                                     AuthenticationException {
                 request.validate();
+                if (workspace == null)
+                        throw new InvalidRequestException("workspace name is missing");
                 UserIdentity identity = userService.authenticate(workspace, request.getUsername(), request.getPassword());
                 return identity;
         }

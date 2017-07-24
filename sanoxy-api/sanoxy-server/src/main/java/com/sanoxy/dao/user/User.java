@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanoxy.service.util.Permission;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -34,7 +35,7 @@ public class User implements Serializable {
 	private String name;
         private String encryptedPasscode;
         private String userPermissionsJson;
-        List<UserJoinWorkspace> userJoinWorkspaces;
+        Collection<UserJoinWorkspace> userJoinWorkspaces;
         
         ObjectMapper mapper = new ObjectMapper();
         
@@ -53,6 +54,7 @@ public class User implements Serializable {
 	
         @Id
         @GeneratedValue(strategy = GenerationType.AUTO)
+        @Column(name = "uid")
 	public Integer getUid() {
 		return uid;
 	}
@@ -94,7 +96,7 @@ public class User implements Serializable {
         }
         
         @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-        public List<UserJoinWorkspace> getUserJoinWorkspaces() {
+        public Collection<UserJoinWorkspace> getUserJoinWorkspaces() {
                 return this.userJoinWorkspaces;
         }
         

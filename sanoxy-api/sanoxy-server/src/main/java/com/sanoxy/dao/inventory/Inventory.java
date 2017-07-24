@@ -19,61 +19,47 @@ import org.hibernate.validator.constraints.NotEmpty;
 @Indexed
 @Table(name = "inventory")
 public class Inventory implements Serializable {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer id;
         
-	@ManyToOne(targetEntity=InventoryCategory.class)
-	@JoinColumn(name = "cid")
+	private Integer iid;
 	private InventoryCategory inventoryCategory;
-        
-        @NotNull
 	private Float suggestPrice;
-        
-        @NotNull
-        @NotEmpty
 	private String ean;
-        
-        @Field
-        @NotNull
-        @NotEmpty
 	private String title;
-        
-        @Field
-        @NotNull
-        @NotEmpty
 	private String brand;
-        
-        @Field
-        @NotNull
-        @NotEmpty
-        @Column(columnDefinition = "TEXT")
 	private String description;
-        
-        @NotNull
 	private String amazonItemType;
-        
-        @NotNull
 	private String amazonProductType;
-        
-        @NotEmpty
 	private String bulletsJson;
-        
-        @NotNull
-        @NotEmpty
-        @Field
 	private String keyword;
-        
-        @NotNull
-        @NotEmpty
 	private String imageUrlsJson;
 
-        
 	
 //	@OneToMany(mappedBy="inventory_id", cascade = CascadeType.ALL)
 //	private List<WarehouseCategory> warehouseCateogries;
         
         public Inventory() {
+        }
+        
+        public Inventory(Float suggestPrice, 
+                         String ean, 
+                         String title, 
+                         String brand, 
+                         String description,
+                         String amazonItemType,
+                         String amazonProductType,
+                         String bulletsJson,
+                         String keyword,
+                         String imageUrlsJson) {
+                this.suggestPrice = suggestPrice;
+                this.ean = ean;
+                this.title = title;
+                this.brand = brand;
+                this.description = description;
+                this.amazonItemType = amazonItemType;
+                this.amazonProductType = amazonProductType;
+                this.bulletsJson = bulletsJson;
+                this.keyword = keyword;
+                this.imageUrlsJson = imageUrlsJson;
         }
         
         public Inventory(InventoryCategory inventoryCategory, 
@@ -87,28 +73,23 @@ public class Inventory implements Serializable {
                          String bulletsJson,
                          String keyword,
                          String imageUrlsJson) {
+                this(suggestPrice, ean, title, brand, description, amazonItemType, amazonProductType, bulletsJson, keyword, imageUrlsJson);
                 this.inventoryCategory = inventoryCategory;
-                this.suggestPrice = suggestPrice;
-                this.ean = ean;
-                this.title = title;
-                this.brand = brand;
-                this.description = description;
-                this.amazonItemType = amazonItemType;
-                this.amazonProductType = amazonProductType;
-                this.bulletsJson = bulletsJson;
-                this.keyword = keyword;
-                this.imageUrlsJson = imageUrlsJson;
         }
         
-	public Integer getId() {
-		return id;
+        @Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+        @Column(name = "iid")
+	public Integer getIid() {
+		return iid;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
+	public void setIid(Integer id) {
+		this.iid = id;
 	}
 
-
+        @ManyToOne(targetEntity=InventoryCategory.class)
+	@JoinColumn(name = "cid")
 	public InventoryCategory getInventoryCategory() {
 		return inventoryCategory;
 	}
@@ -117,7 +98,8 @@ public class Inventory implements Serializable {
 		this.inventoryCategory = inventoryCategory;
 	}
 
-
+        @NotNull
+        @NotEmpty
 	public String getEan() {
 		return ean;
 	}
@@ -126,6 +108,9 @@ public class Inventory implements Serializable {
 		this.ean = ean;
 	}
 
+        @Field
+        @NotNull
+        @NotEmpty
 	public String getTitle() {
 		return title;
 	}
@@ -134,6 +119,9 @@ public class Inventory implements Serializable {
 		this.title = title;
 	}
 
+        @Field
+        @NotNull
+        @NotEmpty
 	public String getBrand() {
 		return brand;
 	}
@@ -142,6 +130,10 @@ public class Inventory implements Serializable {
 		this.brand = brand;
 	}
 
+        @Field
+        @NotNull
+        @NotEmpty
+        @Column(columnDefinition = "TEXT")
 	public String getDescription() {
 		return description;
 	}
@@ -150,6 +142,7 @@ public class Inventory implements Serializable {
 		this.description = description;
 	}
 
+        @NotNull
 	public Float getSuggestPrice() {
 		return suggestPrice;
 	}
@@ -158,6 +151,7 @@ public class Inventory implements Serializable {
 		this.suggestPrice = suggestPrice;
 	}
 
+        @NotNull
 	public String getAmazonItemType() {
 		return amazonItemType;
 	}
@@ -166,6 +160,7 @@ public class Inventory implements Serializable {
 		this.amazonItemType = amazonItemType;
 	}
 
+        @NotNull
 	public String getAmazonProductType() {
 		return amazonProductType;
 	}
@@ -174,6 +169,7 @@ public class Inventory implements Serializable {
 		this.amazonProductType = amazonProductType;
 	}
 
+        @NotEmpty
 	public String getBulletsJson() {
                 return this.bulletsJson;
         }
@@ -182,6 +178,9 @@ public class Inventory implements Serializable {
                 this.bulletsJson = bulletsJson;
         }
 
+        @NotNull
+        @NotEmpty
+        @Field
 	public String getKeyword() {
 		return keyword;
 	}
@@ -190,6 +189,8 @@ public class Inventory implements Serializable {
 		this.keyword = keyword;
 	}
 
+        @NotNull
+        @NotEmpty
 	public String getImageUrlsJson() {
                 return this.imageUrlsJson;
         }

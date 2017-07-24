@@ -41,6 +41,10 @@ public class SecurityController {
                                                         @PathVariable("userId") Integer userId,
                                                         @RequestBody ValidatedIdentifiedRequest request) throws InvalidRequestException {
                 request.validate();
+                if (workspaceId == null)
+                        throw new InvalidRequestException("workspaceId is missing");
+                if (userId == null)
+                        throw new InvalidRequestException("userId is missing");
                 return securityService.getPermissions(workspaceId, userId);
         }
 }

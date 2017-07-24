@@ -2,6 +2,7 @@
 package com.sanoxy.dao.user;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.CascadeType;
@@ -19,17 +20,9 @@ import org.hibernate.validator.constraints.NotEmpty;
 @Table(name = "workspace")
 public class Workspace implements Serializable {
         
-        @Id
-        @GeneratedValue(strategy = GenerationType.AUTO)
         Integer wid;
-        
-        @NotNull
-        @NotEmpty
-        @Column(unique=true)
         String name;
-        
-        @OneToMany(mappedBy = "workspace", cascade = CascadeType.ALL)
-        List<UserJoinWorkspace> userJoinWorkspaces;
+        Collection<UserJoinWorkspace> userJoinWorkspaces;
         
         public Workspace() {
         }
@@ -38,6 +31,9 @@ public class Workspace implements Serializable {
                 this.name = name;
         }
         
+        @Id
+        @GeneratedValue(strategy = GenerationType.AUTO)
+        @Column(name = "wid")
         public Integer getWid() {
                 return this.wid;
         }
@@ -46,6 +42,9 @@ public class Workspace implements Serializable {
                 this.wid = wid;
         }
         
+        @NotNull
+        @NotEmpty
+        @Column(unique=true)
         public String getName() {
                 return this.name;
         }
@@ -54,7 +53,8 @@ public class Workspace implements Serializable {
                 this.name = name;
         }
         
-        public List<UserJoinWorkspace> getUserJoinWorkspaces() {
+        @OneToMany(mappedBy = "workspace", cascade = CascadeType.ALL)
+        public Collection<UserJoinWorkspace> getUserJoinWorkspaces() {
                 return this.userJoinWorkspaces;
         }
         

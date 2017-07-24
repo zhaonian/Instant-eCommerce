@@ -9,8 +9,7 @@ import com.sanoxy.controller.response.Response;
 import com.sanoxy.controller.response.Response.Status;
 import com.sanoxy.dao.inventory.Inventory;
 import com.sanoxy.dao.inventory.InventoryCategory;
-import com.sanoxy.repository.inventory.InventoryCategoryRepository;
-import com.sanoxy.repository.inventory.InventoryRepository;
+import com.sanoxy.service.InventoryService;
 import com.sanoxy.service.SecurityService;
 import com.sanoxy.service.exception.InvalidRequestException;
 import com.sanoxy.service.exception.PermissionDeniedException;
@@ -30,11 +29,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping(value = "api/access", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class InventoryController {
-
+        
         @Autowired
-        private InventoryCategoryRepository inventoryCategoryRepository;
-        @Autowired
-        private InventoryRepository inventoryRepository;
+        private InventoryService inventoryService;
+        
         @Autowired
         private SecurityService securityService;
 
@@ -43,13 +41,12 @@ public class InventoryController {
          */
         @RequestMapping(value = {"/category/get", ""}, method = RequestMethod.GET)
         @ResponseBody
-        public Collection<InventoryCategory> getInventoryCategories(@RequestBody ValidatedIdentifiedRequest request) 
-                                                                                                        throws InvalidRequestException, 
-                                                                                                               PermissionDeniedException {
+        public Collection<InventoryCategory> 
+        getInventoryCategories(@RequestBody ValidatedIdentifiedRequest request) throws InvalidRequestException, 
+                                                                                       PermissionDeniedException {
                 request.validate();
                 securityService.requirePermission(request.getUserIdentity(), WorkspacePermission.ReadCategory.getPermission());
-                Collection<InventoryCategory> categories = inventoryCategoryRepository.findAllByOrderByCategoryNameAsc();
-                return categories;
+                return inventoryService.getInventoryCategories(request.getUserIdentity());
         }
         
         @RequestMapping(value = {"/category/add", ""}, method = RequestMethod.POST)
@@ -57,12 +54,12 @@ public class InventoryController {
         public Response addCategory(@RequestBody AddCategoryRequest request) throws InvalidRequestException, 
                                                                                     PermissionDeniedException {
                 request.validate();
-                securityService.requirePermission(request.getUserIdentity(), WorkspacePermission.CreateCategory.getPermission());
-                
-                InventoryCategory category = new InventoryCategory(request.getCategoryName());
-                inventoryCategoryRepository.save(category);
-                
-                return new Response(Status.Success);
+                securityService.requirePermission(request.getUserIdentity(), WorkspacePermission.CreateCategory.getPermission()); 
+                InventoryCategory newCategory = new InventoryCategory(0, request.getCategoryName());
+                if (inventoryService.addInventoryCategory(request.getUserIdentity(), newCategory))
+                        return new Response(Status.Success);
+                else
+                        return new Response(Status.Failed);
         }
         
         @RequestMapping(value = {"/category/delete/{categoryId}", ""}, method = RequestMethod.POST)
@@ -73,13 +70,13 @@ public class InventoryController {
                 request.validate();
                 securityService.requirePermission(request.getUserIdentity(), WorkspacePermission.DeleteCategory.getPermission());
                 
-                if (categoryId == null) {
+                if (categoryId == null)
                         throw new InvalidRequestException("categoryId is missing");
-                }
-                if (1 != inventoryCategoryRepository.deleteByCid(categoryId))
+                
+                if (inventoryService.deleteInventoryCategory(request.getUserIdentity(), categoryId))
+                        return new Response(Status.Success);
+                else
                         return new Response(Status.Failed);
-              
-                return new Response(Status.Success);
         }
 
         /*
@@ -94,10 +91,7 @@ public class InventoryController {
                                                                                                             PermissionDeniedException {
                 request.validate();
                 securityService.requirePermission(request.getUserIdentity(), WorkspacePermission.ReadInventory.getPermission());
-                
-                Integer numOfRowsToShow = endIndex - startIndex;
-                Collection<Inventory> inventories = inventoryRepository.findAllInventoryItemsByCategoryId(categoryId, startIndex, numOfRowsToShow);
-                return inventories;
+                return inventoryService.getInventories(request.getUserIdentity(), categoryId, startIndex, endIndex);
         }
         
         @RequestMapping(value = {"/inventory/get/{inventoryId}", ""}, method = RequestMethod.GET)
@@ -122,16 +116,10 @@ public class InventoryController {
                                                                                       PermissionDeniedException {
                 request.validate();
                 securityService.requirePermission(request.getUserIdentity(), WorkspacePermission.CreateInventory.getPermission());
-                
-                InventoryCategory inventoryCategory = inventoryCategoryRepository.findByCid(categoryId);
-                if (inventoryCategory == null) {
-                        throw new ResourceMissingException("Category does not exist");
-                }
-                Inventory inventory = request.asInventory(inventoryCategory);
-                inventory.setInventoryCategory(inventoryCategory);
-                inventoryRepository.save(inventory);
-
-                return new Response(Status.Success);
+                if (inventoryService.addInventory(request.getUserIdentity(), categoryId, request.asInventory()))
+                        return new Response(Status.Success);
+                else
+                        return new Response(Status.Failed);                
         }
         
         @RequestMapping(value = {"/inventory/delete/{inventoryId}", ""}, method = RequestMethod.POST)
@@ -142,13 +130,13 @@ public class InventoryController {
                 request.validate();
                 securityService.requirePermission(request.getUserIdentity(), WorkspacePermission.DeleteInventory.getPermission());
                 
-                if (inventoryId == null) {
+                if (inventoryId == null)
                         throw new InvalidRequestException("inventoryId is missing");
-                }
-                if (1 != inventoryRepository.deleteById(inventoryId))
+                
+                if (inventoryService.deleteInventory(request.getUserIdentity(), inventoryId))
+                        return new Response(Status.Success);
+                else
                         return new Response(Status.Failed);
-             
-                return new Response(Status.Success);
         }
         
         @RequestMapping(value = {"/inventory/search/{keyword}", ""}, method = RequestMethod.GET)
@@ -162,7 +150,6 @@ public class InventoryController {
                 
                 if (keyword == null || keyword.isEmpty())
                         throw new InvalidRequestException("Keyword can't be empty.");
-                
-                return inventoryRepository.searchInventoryByKeyword(keyword);
+                return inventoryService.search(request.getUserIdentity(), keyword);
         }
 }

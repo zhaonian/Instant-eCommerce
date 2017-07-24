@@ -16,12 +16,17 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.NotEmpty;
 
 
 @Entity
-@Table(name = "user_join_workspace")
+@Table(name = "user_join_workspace",
+       uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"uid", "wid"})
+       }
+)
 public class UserJoinWorkspace implements Serializable {
         
         Integer uwid;

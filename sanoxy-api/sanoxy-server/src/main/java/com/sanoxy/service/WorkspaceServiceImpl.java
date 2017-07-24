@@ -13,8 +13,8 @@ import com.sanoxy.service.util.IdentityInfo;
 import com.sanoxy.service.util.Permission;
 import com.sanoxy.service.util.UserPermission;
 import com.sanoxy.service.util.WorkspacePermission;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -85,12 +85,12 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         }
 
         @Override
-        public void deleteWorkspace(Integer wid) {
-                workspaceRepository.deleteByWid(wid);
+        public boolean deleteWorkspace(Integer wid) {
+                return workspaceRepository.deleteByWid(wid) == 1;
         }
 
         @Override
-        public List<User> getWorkspaceUsers(Integer wid) {
+        public Collection<User> getWorkspaceUsers(Integer wid) {
                 return userJoinWorkspaceRepository.findUserByWorkspaceWid(wid);
         }
 
@@ -100,23 +100,24 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         }
 
         @Override
-        public void addUserToWorkspace(Integer wid, Integer uid, Set<Permission> perms) {
+        public boolean addUserToWorkspace(Integer wid, Integer uid, Set<Permission> perms) {
                 User user = entityManager.getReference(User.class, uid);
                 Workspace workspace = entityManager.getReference(Workspace.class, wid);
                 try {
-                        userJoinWorkspaceRepository.save(new UserJoinWorkspace(user, workspace, perms));
+                        return null != userJoinWorkspaceRepository.save(new UserJoinWorkspace(user, workspace, perms));
                 } catch (JsonProcessingException ex) {
                         Logger.getLogger(WorkspaceServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                return false;
         }
 
         @Override
-        public void removeUserToWorkspace(Integer wid, Integer uid) {
-                userJoinWorkspaceRepository.deleteByUserUidAndWorkspaceWid(uid, wid);
+        public boolean removeUserToWorkspace(Integer wid, Integer uid) {
+                return 1 == userJoinWorkspaceRepository.deleteByUserUidAndWorkspaceWid(uid, wid);
         }
 
         @Override
-        public void changeUserWorkspacePermission(Integer wid, Integer uid, Set<Permission> perms) {
-                addUserToWorkspace(wid, uid, perms);
+        public boolean changeUserWorkspacePermission(Integer wid, Integer uid, Set<Permission> perms) {
+                return addUserToWorkspace(wid, uid, perms);
         }
 }

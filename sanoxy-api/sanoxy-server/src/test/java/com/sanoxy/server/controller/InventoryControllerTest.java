@@ -63,7 +63,7 @@ public class InventoryControllerTest extends SanoxyControllerTest {
                                 .content(json(request))
                                 .contentType(MEDIA_TYPE))
                                .andExpect(status().isOk());
-                        List<InventoryCategory> c = inventoryCategoryRepository.findByCategoryName(request.getCategoryName());
+                        Collection<InventoryCategory> c = inventoryCategoryRepository.findByCategoryName(request.getCategoryName());
                         assertTrue(c.size() == 1);
                 }
         }
@@ -72,7 +72,7 @@ public class InventoryControllerTest extends SanoxyControllerTest {
                 for (InventoryCategory category: categories) {
                         mockMvc.perform(post("/api/access/category/delete/" + category.getCid()))
                                .andExpect(status().isOk());
-                        List<InventoryCategory> c = inventoryCategoryRepository.findByCategoryName(category.getCategoryName());
+                        Collection<InventoryCategory> c = inventoryCategoryRepository.findByCategoryName(category.getCategoryName());
                         assertTrue(c.isEmpty());
                 }
         }

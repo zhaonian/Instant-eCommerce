@@ -2,7 +2,7 @@
 package com.sanoxy.repository.inventory;
 
 import com.sanoxy.dao.inventory.Inventory;
-import java.util.List;
+import java.util.Collection;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
@@ -20,7 +20,7 @@ public class InventoryRepositoryImpl implements InventoryRepositoryFulltext {
         private EntityManager entityManager;
         
         @Override
-        public List<Inventory> searchInventoryByKeyword(String keyword) {
+        public Collection<Inventory> searchInventoryByKeyword(String keyword) {
                 FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
 
                 QueryBuilder queryBuilder = 
@@ -37,7 +37,7 @@ public class InventoryRepositoryImpl implements InventoryRepositoryFulltext {
                 FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(query, Inventory.class);
 
                 @SuppressWarnings("unchecked")
-                List<Inventory> results = jpaQuery.getResultList();
+                Collection<Inventory> results = jpaQuery.getResultList();
                 return results;
         }
 }
