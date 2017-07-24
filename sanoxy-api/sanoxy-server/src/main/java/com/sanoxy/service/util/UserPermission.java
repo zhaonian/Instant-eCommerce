@@ -17,7 +17,7 @@ public enum UserPermission {
         private final String action;
         private final Integer ordinal;
         
-        private static final String PERMISSION_CATEGORY = "User permission";
+        private static final String PERMISSION_CATEGORY = "User";
         
         UserPermission(String category, String action, Integer ordinal) {
                 this.category = category;

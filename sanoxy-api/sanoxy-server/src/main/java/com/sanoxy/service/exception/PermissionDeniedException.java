@@ -18,7 +18,7 @@ public class PermissionDeniedException extends Exception {
 	@Override
 	public String getMessage() {
 		return message + " Cause: you don't have the permission under the category \"" 
-                        + permission.getPermissionCategory() + " & " + permission.getPermissionSubCategory() + "\""
+                        + permission.getPermissionCategory() + ": " + permission.getPermissionSubCategory() + "\""
                         + " over permission code <" + permission.getPermissionType() + ">"
                         + " to perform the action \"" + permission.getActionDetail() +"\"";
 	}

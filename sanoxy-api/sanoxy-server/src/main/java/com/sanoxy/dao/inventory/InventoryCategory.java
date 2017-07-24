@@ -37,7 +37,7 @@ public class InventoryCategory implements Serializable {
 		return cid;
 	}
 
-	public void setId(Integer cid) {
+	public void setCid(Integer cid) {
 		this.cid = cid;
 	}
         

@@ -42,6 +42,10 @@ public class UserServiceImpl implements UserService {
         PasswordEncoder encoder = new BCryptPasswordEncoder();
         ObjectMapper mapper = new ObjectMapper();
         
+        private Set<Permission> getBasicPermission() {
+                return new HashSet<Permission>() {{ this.add(UserPermission.CreateWorkspace.getPermission()); }};
+        }
+        
         @Override
         public void createNew(String userName, String passcode) throws DuplicatedUserException, PermissionDeniedException {
                 if (userName.startsWith(Constants.ROOT_USER_PREFIX))
@@ -54,7 +58,7 @@ public class UserServiceImpl implements UserService {
                 
                 User user;
                 try {
-                        user = new User(userName, encryptedPasscode, new HashSet<>());
+                        user = new User(userName, encryptedPasscode, getBasicPermission());
                         userRepository.save(user);
                 } catch (JsonProcessingException ex) {
                         Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
@@ -76,8 +80,7 @@ public class UserServiceImpl implements UserService {
                 UserIdentity identity;
                 if (workspaceName.equals("imaginarydb")) {
                         identity = new UserIdentity();
-                        userSessionService.putIdentityInfo(identity.getUid(), new IdentityInfo(user, null, user.getUserPermissions()));
-
+                        userSessionService.putIdentityInfo(identity.getUid(), new IdentityInfo(user, null, null, user.getUserPermissions()));
                 } else {
                         UserJoinWorkspace userJoinWorkspace = 
                                 userJoinWorkspaceRepository.findByUserUidAndWorkspaceName(user.getUid(), workspaceName);
@@ -87,7 +90,7 @@ public class UserServiceImpl implements UserService {
                         identity = new UserIdentity();
                         Set<Permission> perms = user.getUserPermissions();
                         perms.addAll(userJoinWorkspace.getPermissions());
-                        IdentityInfo info = new IdentityInfo(user, userJoinWorkspace.getWorkspace(), perms);
+                        IdentityInfo info = new IdentityInfo(user, null, userJoinWorkspace.getWorkspace(), perms);
                         userSessionService.putIdentityInfo(identity.getUid(), info);
                 }
                 return identity;

@@ -9,6 +9,7 @@ import com.sanoxy.controller.request.inventory.AddInventoryRequest;
 import com.sanoxy.dao.inventory.InventoryCategory;
 import com.sanoxy.repository.inventory.InventoryCategoryRepository;
 import com.sanoxy.repository.inventory.InventoryRepository;
+import com.sanoxy.service.util.IdentityInfo;
 import com.sanoxy.service.util.UserIdentity;
 import java.util.Collection;
 import java.util.List;
@@ -68,9 +69,11 @@ public class InventoryControllerTest extends SanoxyControllerTest {
                 }
         }
         
-        private void requestDeleteCategories(Collection<InventoryCategory> categories) throws Exception {
+        private void requestDeleteCategories(UserIdentity identity, Collection<InventoryCategory> categories) throws Exception {
                 for (InventoryCategory category: categories) {
-                        mockMvc.perform(post("/api/access/category/delete/" + category.getCid()))
+                        mockMvc.perform(post("/api/access/category/delete/" + category.getCid())
+                               .content(json(new ValidatedIdentifiedRequest(identity)))
+                               .contentType(MEDIA_TYPE))
                                .andExpect(status().isOk());
                         Collection<InventoryCategory> c = inventoryCategoryRepository.findByCategoryName(category.getCategoryName());
                         assertTrue(c.isEmpty());
@@ -78,8 +81,9 @@ public class InventoryControllerTest extends SanoxyControllerTest {
         }
         
         private List<InventoryCategory> requestGetAllCategory(UserIdentity identity) throws Exception {
-                MvcResult result = mockMvc.perform(get("/api/access/category/get/")
-                                                .content(json(new ValidatedIdentifiedRequest(identity))))
+                MvcResult result = mockMvc.perform(get("/api/access/category/get")
+                                                .content(json(new ValidatedIdentifiedRequest(identity)))
+                                                .contentType(MEDIA_TYPE))
                                                 .andExpect(status().isOk())
                                                 .andReturn();
                 String content = result.getResponse().getContentAsString();
@@ -94,7 +98,7 @@ public class InventoryControllerTest extends SanoxyControllerTest {
                 AddInventoryRequest[] requests = genAddInventoryRequests(identity, m, cs);
                 for (int i = 0; i < requests.length; i ++) {
                         InventoryCategory category = cs.get(i/m);
-                        mockMvc.perform(post("api/access/inventory/add/" + category.getCid()))
+                        mockMvc.perform(post("api/access/inventory/add" + category.getCid()))
                                 .andExpect(status().isOk());
                 }
         }
@@ -106,15 +110,17 @@ public class InventoryControllerTest extends SanoxyControllerTest {
                 
                 requestNewUser();
                 UserIdentity iid = requestNewUserLogin();
+                IdentityInfo rootInfo = requestNewRootUser(iid, "sanoxy");
+                UserIdentity rootIId = requestUserLogin(rootInfo.getUser().getName(), rootInfo.getRawPasscode(), "sanoxy");
                 
                 // add.
-                requestAddCategories(iid, n);
-                List<InventoryCategory> cs = requestGetAllCategory(iid);
+                requestAddCategories(rootIId, n);
+                List<InventoryCategory> cs = requestGetAllCategory(rootIId);
                 assertTrue(cs.size() == n);
                 
                 // delete.
-                requestDeleteCategories(cs);
-                cs = requestGetAllCategory(iid);
+                requestDeleteCategories(rootIId, cs);
+                cs = requestGetAllCategory(rootIId);
                 assertTrue(cs.isEmpty());
         }
         

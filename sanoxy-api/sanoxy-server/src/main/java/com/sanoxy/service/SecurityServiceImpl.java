@@ -29,17 +29,18 @@ public class SecurityServiceImpl implements SecurityService {
         public void requirePermission(UserIdentity identity, Permission perm) throws PermissionDeniedException {
                 IdentityInfo info = identitySessionService.getIdentityInfo(identity.getUid());
                 
+                Set<Permission> permissions = new HashSet();
                 if (UserPermission.isUserPermission(perm)) {
-                        Set<Permission> permissions = 
-                                info.getUser().getUserPermissions();
-                } else if (WorkspacePermission.isWorkspacePermission(perm)) {        
-                        Set<Permission> permissions = 
-                                workspaceService.getUserWorkspacePermission(info.getWorkspace().getWid(), info.getUser().getUid());
-                        if (!permissions.contains(perm))
-                                throw new PermissionDeniedException(perm);
+                        permissions = info.getUser().getUserPermissions();
+                } else if (WorkspacePermission.isWorkspacePermission(perm)) {
+                        if (info.getWorkspace() != null && info.getUser() != null)
+                                permissions = workspaceService.getUserWorkspacePermission(info.getWorkspace().getWid(),
+                                                                                          info.getUser().getUid());
                 } else {
                         throw new PermissionDeniedException(UserPermission.CreatePermissionRule.getPermission());
                 }
+                if (!permissions.contains(perm))
+                        throw new PermissionDeniedException(perm);
         }
         
         @Override

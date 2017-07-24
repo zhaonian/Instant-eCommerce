@@ -12,6 +12,9 @@ public class Permission {
         private Integer permissionType;
         private String actionDetail;
         
+        public Permission() {
+        }
+         
         public Permission(String permissionCategory, String permissionSubCategory, Integer permissionType, String actionDetail) {
                 this.permissionCategory = permissionCategory;
                 this.permissionSubCategory = permissionSubCategory;

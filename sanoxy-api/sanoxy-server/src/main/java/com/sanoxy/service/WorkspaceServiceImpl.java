@@ -21,6 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -60,6 +61,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         }
 
         @Override
+        @Transactional
         public IdentityInfo createNewWorkspace(String name) throws DuplicatedWorkspaceException {
                 if (workspaceRepository.existsByName(name)) {
                         throw new DuplicatedWorkspaceException();
@@ -77,11 +79,18 @@ public class WorkspaceServiceImpl implements WorkspaceService {
                         return null;
                 }
                 userRepository.save(root);
+                
+                try {
+                        userJoinWorkspaceRepository.save(new UserJoinWorkspace(root, workspace, genFullWorkspacePermissions()));
+                } catch (JsonProcessingException ex) {
+                        Logger.getLogger(WorkspaceServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+                        return null;
+                }
 
                 Set<Permission> perms = new HashSet();
                 perms.addAll(genFullWorkspacePermissions());
                 perms.addAll(genFullUserPermissions());
-                return new IdentityInfo(root, workspace, perms);
+                return new IdentityInfo(root, passcode, workspace, perms);
         }
 
         @Override

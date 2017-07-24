@@ -18,6 +18,6 @@ public interface InventoryRepository extends CrudRepository<Inventory, Integer>,
 	public Collection<Inventory> findByCidWithPagination(@Param("categoryId") Integer categoryId, 
 							     @Param("startIndex") Integer startIndex, 
 							     @Param("numRowsToShow") Integer numRowsToShow);
-
+        public Inventory findByIid(Integer iid);
         public Long deleteByIid(Integer iid);
 }

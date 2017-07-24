@@ -7,6 +7,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -111,6 +112,7 @@ public class Inventory implements Serializable {
         @Field
         @NotNull
         @NotEmpty
+        @Column(length = 1024)
 	public String getTitle() {
 		return title;
 	}
@@ -133,6 +135,7 @@ public class Inventory implements Serializable {
         @Field
         @NotNull
         @NotEmpty
+        @Lob
         @Column(columnDefinition = "TEXT")
 	public String getDescription() {
 		return description;
@@ -169,6 +172,7 @@ public class Inventory implements Serializable {
 		this.amazonProductType = amazonProductType;
 	}
 
+        @Lob
         @NotEmpty
 	public String getBulletsJson() {
                 return this.bulletsJson;
@@ -188,14 +192,15 @@ public class Inventory implements Serializable {
 	public void setKeyword(String keyword) {
 		this.keyword = keyword;
 	}
-
+        
+        @Lob
         @NotNull
         @NotEmpty
 	public String getImageUrlsJson() {
                 return this.imageUrlsJson;
         }
         
-        public void setsImageUrlsJson(String imageUrlsJson) {
+        public void setImageUrlsJson(String imageUrlsJson) {
                 this.imageUrlsJson = imageUrlsJson;
         }
 }

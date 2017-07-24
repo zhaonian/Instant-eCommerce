@@ -2,10 +2,14 @@
 package com.sanoxy.server.controller;
 
 import com.sanoxy.dao.user.User;
+import com.sanoxy.service.util.Permission;
 import com.sanoxy.service.util.UserIdentity;
+import com.sanoxy.service.util.UserPermission;
+import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,6 +29,8 @@ public class UserControllerTest extends SanoxyControllerTest {
         public void createUserTest() throws Exception {
                 requestNewUser();
                 User user = getRequestedNewUser();
+                Set<Permission> permissions = user.getUserPermissions();
+                assertTrue(permissions.contains(UserPermission.CreateWorkspace.getPermission()));
                 assertNotNull(user);
         }
 

@@ -10,9 +10,13 @@ import java.io.Serializable;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -45,6 +49,8 @@ public class UserJoinWorkspace implements Serializable {
         }
         
         @Id
+        @GeneratedValue(strategy = GenerationType.AUTO)
+        @Column(name = "uwid")
         public Integer getUwid() {
                 return this.uwid;
         }
@@ -55,6 +61,7 @@ public class UserJoinWorkspace implements Serializable {
         
         @ManyToOne(targetEntity=User.class)
         @JoinColumn(name = "uid")
+        @NotNull
         public User getUser() {
                 return this.user;
         }
@@ -65,6 +72,7 @@ public class UserJoinWorkspace implements Serializable {
         
         @ManyToOne(targetEntity=Workspace.class)
         @JoinColumn(name = "wid")
+        @NotNull
         public Workspace getWorkspace() {
                 return this.workspace;
         }
@@ -75,6 +83,7 @@ public class UserJoinWorkspace implements Serializable {
         
         @NotNull
         @NotEmpty
+        @Lob
         public String getPermissionsJson() {
                 return this.permissionsJson;
         }

@@ -3,12 +3,14 @@ package com.sanoxy.server.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanoxy.configuration.ControllerTest;
+import com.sanoxy.controller.request.ValidatedIdentifiedRequest;
 import com.sanoxy.controller.request.user.CreateUserRequest;
 import com.sanoxy.controller.request.user.LogInRequest;
 import com.sanoxy.controller.request.user.LogoutRequest;
 import com.sanoxy.dao.user.User;
 import com.sanoxy.repository.user.UserRepository;
 import com.sanoxy.service.IdentitySessionService;
+import com.sanoxy.service.util.IdentityInfo;
 import com.sanoxy.service.util.UserIdentity;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +41,13 @@ public class SanoxyControllerTest extends ControllerTest {
                 return iid;
         }
         
+        protected IdentityInfo responseToIdentityInfo(MvcResult result) throws Exception {
+                String content = result.getResponse().getContentAsString();
+                ObjectMapper mapper = new ObjectMapper();
+                IdentityInfo iid = mapper.readValue(content, IdentityInfo.class);
+                return iid;
+        }
+        
         protected void requestNewUser() throws Exception {
                 CreateUserRequest request = new CreateUserRequest();
                 request.setUsername("test-user");
@@ -49,15 +58,19 @@ public class SanoxyControllerTest extends ControllerTest {
                         .andExpect(status().isOk());
         }
         
-        protected UserIdentity requestNewUserLogin() throws Exception {
-                LogInRequest logInRequest = new LogInRequest("test-user", "test-password");
-                MvcResult result = mockMvc.perform(post("/api/user/login/imaginarydb")
+        protected UserIdentity requestUserLogin(String userName, String password, String workspaceName) throws Exception {
+                LogInRequest logInRequest = new LogInRequest(userName, password);
+                MvcResult result = mockMvc.perform(post("/api/user/login/" + workspaceName)
                         .content(json(logInRequest))
                         .contentType(MEDIA_TYPE))
                         .andExpect(status().isOk())
                         .andReturn();
                 
                 return responseToIdentity(result);
+        }
+        
+        protected UserIdentity requestNewUserLogin() throws Exception {
+                return requestUserLogin("test-user", "test-password", "imaginarydb");
         }
         
         protected void requestUserLogout(UserIdentity iid) throws Exception {
@@ -70,6 +83,15 @@ public class SanoxyControllerTest extends ControllerTest {
         
         protected User getRequestedNewUser() throws Exception {
                 return userRepository.findByName("test-user");
+        }
+        
+        protected IdentityInfo requestNewRootUser(UserIdentity identity, String workspaceName) throws Exception {
+                MvcResult result = mockMvc.perform(post("/api/workspace/create/" + workspaceName)
+                        .content(json(new ValidatedIdentifiedRequest(identity)))
+                        .contentType(MEDIA_TYPE))
+                        .andExpect(status().isOk())
+                        .andReturn();
+                return responseToIdentityInfo(result);
         }
         
         @Test

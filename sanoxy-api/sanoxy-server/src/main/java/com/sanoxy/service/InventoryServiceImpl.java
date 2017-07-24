@@ -10,9 +10,11 @@ import com.sanoxy.service.util.UserIdentity;
 import java.util.Collection;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-
+@Service
 public class InventoryServiceImpl implements InventoryService {
         
         @Autowired
@@ -31,6 +33,7 @@ public class InventoryServiceImpl implements InventoryService {
 
         @Override
         public boolean addInventoryCategory(UserIdentity identity, InventoryCategory category) {
+                category.setNumInventories(0);
                 return null != inventoryCategoryRepository.save(category);
         }
         
@@ -44,19 +47,29 @@ public class InventoryServiceImpl implements InventoryService {
                 return inventoryRepository.findByCidWithPagination(cid, startIndex, endIndex - startIndex + 1);
         }
 
+        @Transactional
         @Override
         public boolean addInventory(UserIdentity identity, Integer cid, Inventory inventory) throws ResourceMissingException {
                 InventoryCategory category = entityManager.getReference(InventoryCategory.class, cid);
                 if (category == null)
                         throw new ResourceMissingException("Category " + cid + " does not exist.");
+                category.setNumInventories(category.getNumInventories() + 1);
                 inventory.setInventoryCategory(category);
                 inventoryRepository.save(inventory);
                 return true;
         }
 
+        @Transactional
         @Override
         public boolean deleteInventory(UserIdentity identity, Integer iid) {
-                return 1 == inventoryRepository.deleteByIid(iid);
+                Inventory inventory = inventoryRepository.findByIid(iid);
+                if (inventory == null)
+                        return false;
+                InventoryCategory category = inventory.getInventoryCategory();
+                inventoryRepository.deleteByIid(iid);
+                category.setNumInventories(category.getNumInventories() - 1);
+                inventoryCategoryRepository.save(category);
+                return true;
         }
 
         @Override

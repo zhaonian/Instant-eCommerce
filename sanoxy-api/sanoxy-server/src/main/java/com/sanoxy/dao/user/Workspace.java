@@ -3,7 +3,6 @@ package com.sanoxy.dao.user;
 
 import java.io.Serializable;
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -58,7 +57,7 @@ public class Workspace implements Serializable {
                 return this.userJoinWorkspaces;
         }
         
-        public void setUserJoinWorkspace(List<UserJoinWorkspace> userJoinWorkspaces) {
+        public void setUserJoinWorkspaces(Collection<UserJoinWorkspace> userJoinWorkspaces) {
                 this.userJoinWorkspaces = userJoinWorkspaces;
         }
         
