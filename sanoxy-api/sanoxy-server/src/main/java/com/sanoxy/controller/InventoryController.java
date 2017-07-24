@@ -43,7 +43,8 @@ public class InventoryController {
         @ResponseBody
         public Collection<InventoryCategory> 
         getInventoryCategories(@RequestBody ValidatedIdentifiedRequest request) throws InvalidRequestException, 
-                                                                                       PermissionDeniedException {
+                                                                                       PermissionDeniedException,
+                                                                                       ResourceMissingException {
                 request.validate();
                 securityService.requirePermission(request.getUserIdentity(), WorkspacePermission.ReadCategory.getPermission());
                 return inventoryService.getInventoryCategories(request.getUserIdentity());
@@ -52,11 +53,11 @@ public class InventoryController {
         @RequestMapping(value = {"/category/add", ""}, method = RequestMethod.POST)
         @ResponseBody
         public Response addCategory(@RequestBody AddCategoryRequest request) throws InvalidRequestException, 
-                                                                                    PermissionDeniedException {
+                                                                                    PermissionDeniedException,
+                                                                                    ResourceMissingException {
                 request.validate();
-                securityService.requirePermission(request.getUserIdentity(), WorkspacePermission.CreateCategory.getPermission()); 
-                InventoryCategory newCategory = new InventoryCategory(0, request.getCategoryName());
-                if (inventoryService.addInventoryCategory(request.getUserIdentity(), newCategory))
+                securityService.requirePermission(request.getUserIdentity(), WorkspacePermission.CreateCategory.getPermission());
+                if (inventoryService.addInventoryCategory(request.getUserIdentity(), request.getCategoryName()))
                         return new Response(Status.Success);
                 else
                         return new Response(Status.Failed);
@@ -66,7 +67,8 @@ public class InventoryController {
         @ResponseBody
         public Response deleteCategory(@PathVariable("categoryId") Integer categoryId, 
                                        @RequestBody ValidatedIdentifiedRequest request) throws InvalidRequestException, 
-                                                                                               PermissionDeniedException {
+                                                                                               PermissionDeniedException,
+                                                                                               ResourceMissingException {
                 request.validate();
                 securityService.requirePermission(request.getUserIdentity(), WorkspacePermission.DeleteCategory.getPermission());
                 
@@ -88,7 +90,8 @@ public class InventoryController {
                                                     @PathVariable("startIndex") Integer startIndex,
                                                     @PathVariable("endIndex") Integer endIndex,
                                                     @RequestBody ValidatedIdentifiedRequest request) throws InvalidRequestException,               
-                                                                                                            PermissionDeniedException {
+                                                                                                            PermissionDeniedException,
+                                                                                                            ResourceMissingException {
                 request.validate();
                 securityService.requirePermission(request.getUserIdentity(), WorkspacePermission.ReadInventory.getPermission());
                 return inventoryService.getInventories(request.getUserIdentity(), categoryId, startIndex, endIndex);
@@ -126,7 +129,8 @@ public class InventoryController {
         @ResponseBody
         public Response deleteInventory(@PathVariable("inventoryId") Integer inventoryId,
                                         @RequestBody AddInventoryRequest request) throws InvalidRequestException, 
-                                                                                         PermissionDeniedException {
+                                                                                         PermissionDeniedException,
+                                                                                         ResourceMissingException {
                 request.validate();
                 securityService.requirePermission(request.getUserIdentity(), WorkspacePermission.DeleteInventory.getPermission());
                 

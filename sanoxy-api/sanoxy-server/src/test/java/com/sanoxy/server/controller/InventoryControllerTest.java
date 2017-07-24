@@ -7,6 +7,7 @@ import com.sanoxy.controller.request.ValidatedIdentifiedRequest;
 import com.sanoxy.controller.request.inventory.AddCategoryRequest;
 import com.sanoxy.controller.request.inventory.AddInventoryRequest;
 import com.sanoxy.dao.inventory.InventoryCategory;
+import com.sanoxy.dao.user.Workspace;
 import com.sanoxy.repository.inventory.InventoryCategoryRepository;
 import com.sanoxy.repository.inventory.InventoryRepository;
 import com.sanoxy.service.util.IdentityInfo;
@@ -58,24 +59,30 @@ public class InventoryControllerTest extends SanoxyControllerTest {
         }
         
         private void requestAddCategories(UserIdentity identity, int n) throws Exception {
+                Workspace workspace = getLoggedInWorkspace(identity);
+                
                 AddCategoryRequest[] requests = genAddCategoryRequests(identity, n);
                 for (AddCategoryRequest request: requests) {
                         mockMvc.perform(post("/api/access/category/add")
                                 .content(json(request))
                                 .contentType(MEDIA_TYPE))
                                .andExpect(status().isOk());
-                        Collection<InventoryCategory> c = inventoryCategoryRepository.findByCategoryName(request.getCategoryName());
+                        Collection<InventoryCategory> c = 
+                                inventoryCategoryRepository.findByWorkspaceWidAndCategoryName(workspace.getWid(), request.getCategoryName());
                         assertTrue(c.size() == 1);
                 }
         }
         
         private void requestDeleteCategories(UserIdentity identity, Collection<InventoryCategory> categories) throws Exception {
+                Workspace workspace = getLoggedInWorkspace(identity);
+                
                 for (InventoryCategory category: categories) {
                         mockMvc.perform(post("/api/access/category/delete/" + category.getCid())
                                .content(json(new ValidatedIdentifiedRequest(identity)))
                                .contentType(MEDIA_TYPE))
                                .andExpect(status().isOk());
-                        Collection<InventoryCategory> c = inventoryCategoryRepository.findByCategoryName(category.getCategoryName());
+                        Collection<InventoryCategory> c = 
+                                inventoryCategoryRepository.findByWorkspaceWidAndCategoryName(workspace.getWid(), category.getCategoryName());
                         assertTrue(c.isEmpty());
                 }
         }

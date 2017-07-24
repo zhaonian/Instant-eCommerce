@@ -3,6 +3,7 @@ package com.sanoxy.service;
 
 import com.sanoxy.dao.inventory.Inventory;
 import com.sanoxy.dao.inventory.InventoryCategory;
+import com.sanoxy.dao.user.Workspace;
 import com.sanoxy.repository.inventory.InventoryCategoryRepository;
 import com.sanoxy.repository.inventory.InventoryRepository;
 import com.sanoxy.service.exception.ResourceMissingException;
@@ -23,18 +24,29 @@ public class InventoryServiceImpl implements InventoryService {
         @Autowired
         private InventoryRepository inventoryRepository;
         
+        @Autowired
+        private UserService userService;
+        
         @PersistenceContext
         private EntityManager entityManager;
-
-        @Override
-        public Collection<InventoryCategory> getInventoryCategories(UserIdentity identity) {
-                return inventoryCategoryRepository.findAllByOrderByCategoryNameAsc();
+        
+        private Workspace getLoggedInWorkspace(UserIdentity identity) throws ResourceMissingException {
+                Workspace workspace = userService.getIdentityInfo(identity).getWorkspace();
+                if (workspace == null)
+                        throw new ResourceMissingException("Workspace for the current login status does not exist.");
+                return workspace;
         }
 
         @Override
-        public boolean addInventoryCategory(UserIdentity identity, InventoryCategory category) {
-                category.setNumInventories(0);
-                return null != inventoryCategoryRepository.save(category);
+        public Collection<InventoryCategory> getInventoryCategories(UserIdentity identity) throws ResourceMissingException {
+                Workspace workspace = getLoggedInWorkspace(identity);
+                return inventoryCategoryRepository.findByWorkspaceWidOrderByCategoryNameAsc(workspace.getWid());
+        }
+
+        @Override
+        public boolean addInventoryCategory(UserIdentity identity, String categoryName) throws ResourceMissingException {
+                Workspace workspace = getLoggedInWorkspace(identity);
+                return null != inventoryCategoryRepository.save(new InventoryCategory(workspace, categoryName));
         }
         
         @Override

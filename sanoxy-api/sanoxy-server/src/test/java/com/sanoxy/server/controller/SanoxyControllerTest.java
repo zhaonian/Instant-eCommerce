@@ -8,8 +8,11 @@ import com.sanoxy.controller.request.user.CreateUserRequest;
 import com.sanoxy.controller.request.user.LogInRequest;
 import com.sanoxy.controller.request.user.LogoutRequest;
 import com.sanoxy.dao.user.User;
+import com.sanoxy.dao.user.Workspace;
 import com.sanoxy.repository.user.UserRepository;
 import com.sanoxy.service.IdentitySessionService;
+import com.sanoxy.service.UserService;
+import com.sanoxy.service.exception.ResourceMissingException;
 import com.sanoxy.service.util.IdentityInfo;
 import com.sanoxy.service.util.UserIdentity;
 import org.junit.Test;
@@ -33,6 +36,9 @@ public class SanoxyControllerTest extends ControllerTest {
         
         @Autowired
         protected IdentitySessionService userSessionService;
+        
+        @Autowired
+        protected UserService userService;
         
         protected UserIdentity responseToIdentity(MvcResult result) throws Exception {
                 String content = result.getResponse().getContentAsString();
@@ -92,6 +98,13 @@ public class SanoxyControllerTest extends ControllerTest {
                         .andExpect(status().isOk())
                         .andReturn();
                 return responseToIdentityInfo(result);
+        }
+        
+        protected Workspace getLoggedInWorkspace(UserIdentity identity) throws ResourceMissingException {
+                Workspace workspace = userService.getIdentityInfo(identity).getWorkspace();
+                if (workspace == null)
+                        throw new ResourceMissingException("Workspace for the current login status does not exist.");
+                return workspace;
         }
         
         @Test

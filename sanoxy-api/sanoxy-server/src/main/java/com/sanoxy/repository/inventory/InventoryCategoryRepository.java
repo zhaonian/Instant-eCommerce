@@ -6,11 +6,8 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface InventoryCategoryRepository extends CrudRepository<InventoryCategory, Integer> {
 
-	public Collection<InventoryCategory> findAllByOrderByCategoryNameAsc();
-	
-        public Collection<InventoryCategory> findByCategoryName(String categoryName);
-                
+	public Collection<InventoryCategory> findByWorkspaceWidOrderByCategoryNameAsc(Integer wid);
+        public Collection<InventoryCategory> findByWorkspaceWidAndCategoryName(Integer wid, String categoryName);
 	public InventoryCategory findByCid(Integer cid);
-
         public Long deleteByCid(Integer cid);
 }
