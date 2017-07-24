@@ -108,7 +108,8 @@ public class InventoryServiceImpl implements InventoryService {
         }
 
         @Override
-        public Collection<Inventory> search(UserIdentity identity, String keyword) {
-                return inventoryRepository.searchInventoryByKeyword(keyword);
+        public Collection<Inventory> searchWorkspaceInventories(UserIdentity identity, String keyword) throws ResourceMissingException {
+                Workspace workspace = getLoggedInWorkspace(identity);
+                return inventoryRepository.searchWorkspaceInventoriesByKeyword(workspace.getWid(), keyword);
         }
 }

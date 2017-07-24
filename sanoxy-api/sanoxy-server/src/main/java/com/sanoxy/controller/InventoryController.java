@@ -164,6 +164,6 @@ public class InventoryController {
                 
                 if (keyword == null || keyword.isEmpty())
                         throw new InvalidRequestException("Keyword can't be empty.");
-                return inventoryService.search(request.getUserIdentity(), keyword);
+                return inventoryService.searchWorkspaceInventories(request.getUserIdentity(), keyword);
         }
 }

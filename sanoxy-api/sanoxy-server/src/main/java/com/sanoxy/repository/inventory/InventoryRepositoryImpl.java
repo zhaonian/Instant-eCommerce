@@ -2,6 +2,7 @@
 package com.sanoxy.repository.inventory;
 
 import com.sanoxy.dao.inventory.Inventory;
+import java.util.ArrayList;
 import java.util.Collection;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -20,7 +21,7 @@ public class InventoryRepositoryImpl implements InventoryRepositoryFulltext {
         private EntityManager entityManager;
         
         @Override
-        public Collection<Inventory> searchInventoryByKeyword(String keyword) {
+        public Collection<Inventory> searchWorkspaceInventoriesByKeyword(Integer wid, String keyword) {
                 FullTextEntityManager fullTextEntityManager = Search.getFullTextEntityManager(entityManager);
 
                 QueryBuilder queryBuilder = 
@@ -30,14 +31,21 @@ public class InventoryRepositoryImpl implements InventoryRepositoryFulltext {
                 org.apache.lucene.search.Query query =
                     queryBuilder
                       .keyword()
-                      .onFields("title", "brand", "description", "keyword")
+                      .onFields("title", "brand", "keyword", "description")
                       .matching(keyword)
                       .createQuery();
 
                 FullTextQuery jpaQuery = fullTextEntityManager.createFullTextQuery(query, Inventory.class);
-
+                
                 @SuppressWarnings("unchecked")
                 Collection<Inventory> results = jpaQuery.getResultList();
-                return results;
+                
+                // @Fixme: don't do this in memory.
+                Collection<Inventory> filtered = new ArrayList();
+                results.stream().filter((inventory) -> (inventory.getInventoryCategory().getWorkspace().getWid().equals(wid)))
+                        .forEachOrdered((inventory) -> {
+                                filtered.add(inventory);
+                });
+                return filtered;
         }
 }

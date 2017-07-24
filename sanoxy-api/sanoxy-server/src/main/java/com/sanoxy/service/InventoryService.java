@@ -27,5 +27,5 @@ public interface InventoryService {
                                     String keyword,
                                     Collection<String> imageUrls) throws ResourceMissingException, JsonProcessingException;
         public boolean deleteInventory(UserIdentity identity, Integer iid) throws ResourceMissingException;
-        public Collection<Inventory> search(UserIdentity identity, String keyword) throws ResourceMissingException;
+        public Collection<Inventory> searchWorkspaceInventories(UserIdentity identity, String keyword) throws ResourceMissingException;
 }

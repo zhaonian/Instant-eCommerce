@@ -6,5 +6,5 @@ import java.util.Collection;
 
 
 public interface InventoryRepositoryFulltext {
-        public Collection<Inventory> searchInventoryByKeyword(String keyword);
+        public Collection<Inventory> searchWorkspaceInventoriesByKeyword(Integer wid, String keyword);
 }
