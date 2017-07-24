@@ -119,7 +119,17 @@ public class InventoryController {
                                                                                       PermissionDeniedException {
                 request.validate();
                 securityService.requirePermission(request.getUserIdentity(), WorkspacePermission.CreateInventory.getPermission());
-                if (inventoryService.addInventory(request.getUserIdentity(), categoryId, request.asInventory()))
+                if (inventoryService.addInventory(request.getUserIdentity(), categoryId, 
+                                                  request.getSuggestPrice(), 
+                                                  request.getEan(), 
+                                                  request.getTitle(), 
+                                                  request.getBrand(), 
+                                                  request.getDescription(), 
+                                                  request.getAmazonItemType(), 
+                                                  request.getAmazonProductType(), 
+                                                  request.getBullets(), 
+                                                  request.getKeyword(), 
+                                                  request.getImageUrls()))
                         return new Response(Status.Success);
                 else
                         return new Response(Status.Failed);                

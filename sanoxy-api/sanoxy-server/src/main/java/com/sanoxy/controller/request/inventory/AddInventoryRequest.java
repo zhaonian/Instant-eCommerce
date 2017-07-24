@@ -1,10 +1,7 @@
 
 package com.sanoxy.controller.request.inventory;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanoxy.controller.request.ValidatedIdentifiedRequest;
-import com.sanoxy.dao.inventory.Inventory;
 import com.sanoxy.service.exception.InvalidRequestException;
 import com.sanoxy.service.util.UserIdentity;
 import java.util.ArrayList;
@@ -56,22 +53,6 @@ public class AddInventoryRequest extends ValidatedIdentifiedRequest {
                 super.validate();
 		if (title == null || title.isEmpty()) { throw new InvalidRequestException("title is missing"); }
 		if (brand == null || brand.isEmpty()) { throw new InvalidRequestException("brand is missing"); }
-	}
-
-	public Inventory asInventory() throws JsonProcessingException {
-                ObjectMapper mapper = new ObjectMapper();
-		Inventory inventory = new Inventory(
-                        suggestPrice, 
-                        ean, 
-                        title, 
-                        brand, 
-                        description, 
-                        amazonItemType,
-                        amazonProductType,
-                        mapper.writeValueAsString(bullets),
-                        keyword,
-                        mapper.writeValueAsString(imageUrls));
-		return inventory;
 	}
 
 	public Float getSuggestPrice() {

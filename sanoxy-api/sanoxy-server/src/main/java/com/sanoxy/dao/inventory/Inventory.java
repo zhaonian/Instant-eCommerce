@@ -41,28 +41,6 @@ public class Inventory implements Serializable {
         public Inventory() {
         }
         
-        public Inventory(Float suggestPrice, 
-                         String ean, 
-                         String title, 
-                         String brand, 
-                         String description,
-                         String amazonItemType,
-                         String amazonProductType,
-                         String bulletsJson,
-                         String keyword,
-                         String imageUrlsJson) {
-                this.suggestPrice = suggestPrice;
-                this.ean = ean;
-                this.title = title;
-                this.brand = brand;
-                this.description = description;
-                this.amazonItemType = amazonItemType;
-                this.amazonProductType = amazonProductType;
-                this.bulletsJson = bulletsJson;
-                this.keyword = keyword;
-                this.imageUrlsJson = imageUrlsJson;
-        }
-        
         public Inventory(InventoryCategory inventoryCategory, 
                          Float suggestPrice, 
                          String ean, 
@@ -74,8 +52,17 @@ public class Inventory implements Serializable {
                          String bulletsJson,
                          String keyword,
                          String imageUrlsJson) {
-                this(suggestPrice, ean, title, brand, description, amazonItemType, amazonProductType, bulletsJson, keyword, imageUrlsJson);
                 this.inventoryCategory = inventoryCategory;
+                this.suggestPrice = suggestPrice;
+                this.ean = ean;
+                this.title = title;
+                this.brand = brand;
+                this.description = description;
+                this.amazonItemType = amazonItemType;
+                this.amazonProductType = amazonProductType;
+                this.bulletsJson = bulletsJson;
+                this.keyword = keyword;
+                this.imageUrlsJson = imageUrlsJson;
         }
         
         @Id

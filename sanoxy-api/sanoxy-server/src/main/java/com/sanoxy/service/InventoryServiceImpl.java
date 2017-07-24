@@ -1,6 +1,8 @@
 
 package com.sanoxy.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanoxy.dao.inventory.Inventory;
 import com.sanoxy.dao.inventory.InventoryCategory;
 import com.sanoxy.dao.user.Workspace;
@@ -29,6 +31,8 @@ public class InventoryServiceImpl implements InventoryService {
         
         @PersistenceContext
         private EntityManager entityManager;
+        
+        private final ObjectMapper mapper = new ObjectMapper();
         
         private Workspace getLoggedInWorkspace(UserIdentity identity) throws ResourceMissingException {
                 Workspace workspace = userService.getIdentityInfo(identity).getWorkspace();
@@ -61,25 +65,44 @@ public class InventoryServiceImpl implements InventoryService {
 
         @Transactional
         @Override
-        public boolean addInventory(UserIdentity identity, Integer cid, Inventory inventory) throws ResourceMissingException {
+        public boolean addInventory(UserIdentity identity, Integer cid, 
+                                    Float suggestPrice, 
+                                    String ean, 
+                                    String title, 
+                                    String brand, 
+                                    String description,
+                                    String amazonItemType,
+                                    String amazonProductType,
+                                    Collection<String> bullets,
+                                    String keyword,
+                                    Collection<String> imageUrls) throws ResourceMissingException, JsonProcessingException {
                 InventoryCategory category = entityManager.getReference(InventoryCategory.class, cid);
                 if (category == null)
                         throw new ResourceMissingException("Category " + cid + " does not exist.");
-                category.setNumInventories(category.getNumInventories() + 1);
-                inventory.setInventoryCategory(category);
-                inventoryRepository.save(inventory);
+                category.incNumInventories();
+                inventoryRepository.save(new Inventory(category, 
+                                                       suggestPrice, 
+                                                       ean, 
+                                                       title, 
+                                                       brand, 
+                                                       description, 
+                                                       amazonItemType, amazonProductType, 
+                                                       mapper.writeValueAsString(bullets), 
+                                                       keyword, 
+                                                       mapper.writeValueAsString(imageUrls)));
                 return true;
         }
 
         @Transactional
         @Override
-        public boolean deleteInventory(UserIdentity identity, Integer iid) {
+        public boolean deleteInventory(UserIdentity identity, Integer iid) throws ResourceMissingException {
                 Inventory inventory = inventoryRepository.findByIid(iid);
                 if (inventory == null)
-                        return false;
-                InventoryCategory category = inventory.getInventoryCategory();
+                        throw new ResourceMissingException("Inventory with iid <" + iid + "> does not exist.");
                 inventoryRepository.deleteByIid(iid);
-                category.setNumInventories(category.getNumInventories() - 1);
+                
+                InventoryCategory category = inventory.getInventoryCategory();
+                category.decNumInventories();
                 inventoryCategoryRepository.save(category);
                 return true;
         }

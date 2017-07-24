@@ -70,6 +70,14 @@ public class InventoryCategory implements Serializable {
         public void setNumInventories(Integer numInventories) {
                 this.numInventories = numInventories;
         }
+        
+        public void incNumInventories() {
+                this.numInventories ++;
+        }
+        
+        public void decNumInventories() {
+                this.numInventories --;
+        }
 
         @NotNull
         @NotEmpty

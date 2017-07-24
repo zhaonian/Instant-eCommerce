@@ -1,6 +1,7 @@
 
 package com.sanoxy.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sanoxy.dao.inventory.Inventory;
 import com.sanoxy.dao.inventory.InventoryCategory;
 import com.sanoxy.service.exception.ResourceMissingException;
@@ -14,7 +15,17 @@ public interface InventoryService {
         public boolean addInventoryCategory(UserIdentity identity, String categoryName) throws ResourceMissingException;
         public boolean deleteInventoryCategory(UserIdentity identity, Integer cid) throws ResourceMissingException;
         public Collection<Inventory> getInventories(UserIdentity identity, Integer cid, Integer startIndex, Integer endIndex) throws ResourceMissingException;
-        public boolean addInventory(UserIdentity identity, Integer cid, Inventory inventory) throws ResourceMissingException;
+        public boolean addInventory(UserIdentity identity, Integer cid, 
+                                    Float suggestPrice, 
+                                    String ean, 
+                                    String title, 
+                                    String brand, 
+                                    String description,
+                                    String amazonItemType,
+                                    String amazonProductType,
+                                    Collection<String> bullets,
+                                    String keyword,
+                                    Collection<String> imageUrls) throws ResourceMissingException, JsonProcessingException;
         public boolean deleteInventory(UserIdentity identity, Integer iid) throws ResourceMissingException;
         public Collection<Inventory> search(UserIdentity identity, String keyword) throws ResourceMissingException;
 }
