@@ -28,14 +28,16 @@ static void
 connect_to_central_server(Ui::LoginWindow* ui)
 {
         ui->statusbar->showMessage("Connecting...");
+        std::string error;
         if (core::get_central_server()->connect(ui->hostname->text().toStdString(),
-                                                std::stoi(ui->portnumber->text().toStdString()))) {
-                ui->statusbar->showMessage("Connected to the central server.");
+                                                std::stoi(ui->portnumber->text().toStdString()),
+                                                error)) {
+                ui->statusbar->showMessage(("Connected to the central server (" + core::get_central_server()->server_version() + ")").c_str());
                 core::sysconfig* config = core::get_system_config();
                 config->set_host_name(ui->hostname->text().toStdString());
                 config->set_host_port(std::stoi(ui->portnumber->text().toStdString()));
         } else {
-                ui->statusbar->showMessage(("Connection failure. cause: " + core::get_central_server()->error()).c_str());
+                ui->statusbar->showMessage(("Connection failure. cause: " + error).c_str());
                 ui->tabWidget->setCurrentIndex(2);
         }
 }
@@ -73,17 +75,19 @@ void
 LoginWindow::on_login_button_clicked()
 {
         m_ui->statusbar->showMessage("Logging in...");
+        std::string error;
         core::identity identity = core::auth(*core::get_central_server(),
                                              m_ui->login_username->text().toStdString(),
                                              m_ui->login_password->text().toStdString(),
-                                             m_ui->login_database->text().toStdString());
-        if (identity.is_valid()) {
+                                             m_ui->login_database->text().toStdString(),
+                                             error);
+        if (error.empty()) {
                 save_login_form(m_ui);
                 m_main_window->make_connection(identity);
                 m_main_window->showMaximized();
                 this->close();
         } else {
-                m_ui->statusbar->showMessage(identity.error().c_str());
+                m_ui->statusbar->showMessage(error.c_str());
         }
 }
 

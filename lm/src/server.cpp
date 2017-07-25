@@ -55,7 +55,7 @@ connect(boost::asio::ip::tcp::socket& sock, boost::asio::io_service& service, st
 }
 
 static std::string
-json_request_detail(std::string const& host, std::string const& path, std::string const& type, core::json_t const& json)
+json_request_detail(std::string const& host, std::string const& path, std::string const& type, util::json_t const& json)
 {
         std::stringstream ss;
         ss << type << ' ' << path << " HTTP/1.1" << "\r\n";
@@ -77,7 +77,7 @@ json_request_detail(std::string const& host, std::string const& path, std::strin
 }
 
 static std::string
-send_json_request(std::string const& host, unsigned port, std::string const& path, std::string const& type, core::json_t const& json)
+send_json_request(std::string const& host, unsigned port, std::string const& path, std::string const& type, util::json_t const& json)
 {
         // establish connection.
         boost::asio::io_service service;
@@ -111,7 +111,7 @@ send_json_request(std::string const& host, unsigned port, std::string const& pat
 }
 
 static bool
-parse_json_response(core::json_t& json, std::string const& response, std::string& error)
+parse_json_response(util::json_t& json, std::string const& response, std::string& error)
 {
         error.clear();
 
@@ -158,18 +158,19 @@ core::central_server::central_server()
 
 
 bool
-core::central_server::connect(std::string const& host_name, unsigned port)
+core::central_server::connect(std::string const& host_name, unsigned port, std::string& error)
 {
         m_host_name = host_name;
         m_port = port;
 
-        send_json_request(m_connection, "/api/workspace/connection/test", request_type::get, json_t());
-        if (m_error.empty()) {
+        util::json_t info;
+        send_json_request(info, "/api/server_info", request_type::get, util::json_t(), error);
+        if (error.empty()) {
                 try {
-                        if (m_connection.get<std::string>("status") == "1")
-                                m_is_connected = true;
+                        m_server_info.import_json(info);
+                        m_is_connected = info.get<std::string>("status") == "1";
                 } catch (...) {
-                        m_error = "Invalid status";
+                        error = "Invalid response";
                         m_is_connected = false;
                 }
         } else {
@@ -185,19 +186,27 @@ core::central_server::is_connected() const
         return m_is_connected;
 }
 
+std::string const&
+core::central_server::server_version() const
+{
+        return m_server_info.version_string;
+}
+
 bool
-core::central_server::send_json_request(json_t& data, std::string const& path, request_type type, json_t const& json)
+core::central_server::send_json_request(util::json_t& data, std::string const& path, request_type type, util::json_t const& json, std::string& error)
 {
         std::string response = ::send_json_request(m_host_name, m_port, path, type == request_type::get ? "GET" : "POST", json);
-        return parse_json_response(data, response, m_error);
+        if (parse_json_response(data, response, error)) {
+                try {
+                        error = data.get<std::string>("message");
+                        return false;
+                } catch (...) {
+                        error.clear();
+                        return true;
+                }
+        } else
+                return false;
 }
-
-std::string
-core::central_server::error() const
-{
-        return m_error;
-}
-
 
 core::central_server    g_server;
 

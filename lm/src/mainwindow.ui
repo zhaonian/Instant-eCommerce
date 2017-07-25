@@ -523,10 +523,11 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
     <property name="title">
      <string>Data</string>
     </property>
-    <addaction name="commit"/>
-    <addaction name="revert_to_last_commit"/>
-    <addaction name="open_history"/>
+    <addaction name="actionUndo"/>
+    <addaction name="actionRedo"/>
+    <addaction name="separator"/>
     <addaction name="publish"/>
+    <addaction name="open_history"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
@@ -708,6 +709,16 @@ QCheckBox::indicator:disabled, QRadioButton::indicator:disabled
   <action name="actionPrint_statistics">
    <property name="text">
     <string>Print Statistics</string>
+   </property>
+  </action>
+  <action name="actionUndo">
+   <property name="text">
+    <string>Undo</string>
+   </property>
+  </action>
+  <action name="actionRedo">
+   <property name="text">
+    <string>Redo</string>
    </property>
   </action>
  </widget>
