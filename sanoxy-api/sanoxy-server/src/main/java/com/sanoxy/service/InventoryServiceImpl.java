@@ -65,22 +65,22 @@ public class InventoryServiceImpl implements InventoryService {
 
         @Transactional
         @Override
-        public boolean addInventory(UserIdentity identity, Integer cid, 
-                                    Float suggestPrice, 
-                                    String ean, 
-                                    String title, 
-                                    String brand, 
-                                    String description,
-                                    String amazonItemType,
-                                    String amazonProductType,
-                                    Collection<String> bullets,
-                                    String keyword,
-                                    Collection<String> imageUrls) throws ResourceMissingException, JsonProcessingException {
+        public Inventory addInventory(UserIdentity identity, Integer cid, 
+                                      Float suggestPrice, 
+                                      String ean, 
+                                      String title, 
+                                      String brand, 
+                                      String description,
+                                      String amazonItemType,
+                                      String amazonProductType,
+                                      Collection<String> bullets,
+                                      String keyword,
+                                      Collection<String> imageUrls) throws ResourceMissingException, JsonProcessingException {
                 InventoryCategory category = entityManager.getReference(InventoryCategory.class, cid);
                 if (category == null)
                         throw new ResourceMissingException("Category " + cid + " does not exist.");
                 category.incNumInventories();
-                inventoryRepository.save(new Inventory(category, 
+                return inventoryRepository.save(new Inventory(category, 
                                                        suggestPrice, 
                                                        ean, 
                                                        title, 
@@ -90,7 +90,6 @@ public class InventoryServiceImpl implements InventoryService {
                                                        mapper.writeValueAsString(bullets), 
                                                        keyword, 
                                                        mapper.writeValueAsString(imageUrls)));
-                return true;
         }
 
         @Transactional

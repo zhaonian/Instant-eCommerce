@@ -112,14 +112,14 @@ public class InventoryController {
          */
         @RequestMapping(value = {"/inventory/add/{categoryId}", ""}, method = RequestMethod.POST)
         @ResponseBody
-        public Response addInventory(@PathVariable("categoryId") Integer categoryId, 
+        public Inventory addInventory(@PathVariable("categoryId") Integer categoryId, 
                                      @RequestBody AddInventoryRequest request) throws InvalidRequestException, 
                                                                                       ResourceMissingException, 
                                                                                       JsonProcessingException,
                                                                                       PermissionDeniedException {
                 request.validate();
                 securityService.requirePermission(request.getUserIdentity(), WorkspacePermission.CreateInventory.getPermission());
-                if (inventoryService.addInventory(request.getUserIdentity(), categoryId, 
+                return inventoryService.addInventory(request.getUserIdentity(), categoryId, 
                                                   request.getSuggestPrice(), 
                                                   request.getEan(), 
                                                   request.getTitle(), 
@@ -129,10 +129,7 @@ public class InventoryController {
                                                   request.getAmazonProductType(), 
                                                   request.getBullets(), 
                                                   request.getKeyword(), 
-                                                  request.getImageUrls()))
-                        return new Response(Status.Success);
-                else
-                        return new Response(Status.Failed);                
+                                                  request.getImageUrls());             
         }
         
         @RequestMapping(value = {"/inventory/delete/{inventoryId}", ""}, method = RequestMethod.POST)

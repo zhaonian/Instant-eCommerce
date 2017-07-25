@@ -12,8 +12,10 @@ import com.sanoxy.repository.inventory.InventoryCategoryRepository;
 import com.sanoxy.repository.inventory.InventoryRepository;
 import com.sanoxy.service.util.IdentityInfo;
 import com.sanoxy.service.util.UserIdentity;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Random;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,11 +50,28 @@ public class InventoryControllerTest extends SanoxyControllerTest {
         }
         
         private AddInventoryRequest[] genAddInventoryRequests(UserIdentity identity, int n, Collection<InventoryCategory> categories) {
+                String[] titles = {"Testing titles", 
+                                   "Titles Can Be (And Should Be) Extremely Long", 
+                                   "Every Title Is Allowed 250 Characters",
+                                   "I Can Include Any Information I Want In My Title",
+                                   "The Title Only Impacts The Word Search Results And The Product Listing"};
+                
                 AddInventoryRequest[] requests = new AddInventoryRequest[n*categories.size()];
+                Random rng = new Random(10);
                 int i = 0;
                 for (InventoryCategory category : categories) {
                         for (int j = 0; j < n; i++, j ++) {
-                                requests[i] = new AddInventoryRequest();
+                                requests[i] = new AddInventoryRequest(identity, 
+                                        rng.nextFloat()*10, 
+                                        Integer.toString(rng.nextInt()),
+                                        titles[rng.nextInt(1000)%titles.length],
+                                        "Concox",
+                                        "Brief description",
+                                        "Electronics",
+                                        "Tablets",
+                                        new ArrayList() {{ this.add("Good quality"); this.add("Lowest price"); }},
+                                        "Random item",
+                                        new ArrayList() {{ this.add("http://xj39.com"); this.add("http://2x9dj.com"); }});
                         }
                 }
                 return requests;
@@ -105,7 +124,9 @@ public class InventoryControllerTest extends SanoxyControllerTest {
                 AddInventoryRequest[] requests = genAddInventoryRequests(identity, m, cs);
                 for (int i = 0; i < requests.length; i ++) {
                         InventoryCategory category = cs.get(i/m);
-                        mockMvc.perform(post("api/access/inventory/add" + category.getCid()))
+                        mockMvc.perform(post("/api/access/inventory/add/" + category.getCid())
+                                .content(json(requests[i]))
+                                .contentType(MEDIA_TYPE))
                                 .andExpect(status().isOk());
                 }
         }
@@ -139,7 +160,9 @@ public class InventoryControllerTest extends SanoxyControllerTest {
                 
                 requestNewUser();
                 UserIdentity iid = requestNewUserLogin();
+                IdentityInfo rootInfo = requestNewRootUser(iid, "sanoxy");
+                UserIdentity rootIId = requestUserLogin(rootInfo.getUser().getName(), rootInfo.getRawPasscode(), "sanoxy");
                 
-                //requestAddAllInventories(response.getUserIdentity(), n, m);
+                requestAddAllInventories(rootIId, n, m);
         }
 }
