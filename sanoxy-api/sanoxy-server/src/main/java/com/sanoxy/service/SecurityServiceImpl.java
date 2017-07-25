@@ -1,7 +1,9 @@
 
 package com.sanoxy.service;
 
+import com.sanoxy.dao.user.Workspace;
 import com.sanoxy.service.exception.PermissionDeniedException;
+import com.sanoxy.service.exception.ResourceMissingException;
 import com.sanoxy.service.util.IdentityInfo;
 import com.sanoxy.service.util.Permission;
 import com.sanoxy.service.util.UserIdentity;
@@ -24,11 +26,8 @@ public class SecurityServiceImpl implements SecurityService {
         
         @Autowired
         IdentitySessionService identitySessionService;
-
-        @Override
-        public void requirePermission(UserIdentity identity, Permission perm) throws PermissionDeniedException {
-                IdentityInfo info = identitySessionService.getIdentityInfo(identity.getUid());
-                
+        
+        private void testPermission(IdentityInfo info, Permission perm) throws PermissionDeniedException {
                 Set<Permission> permissions = new HashSet();
                 if (UserPermission.isUserPermission(perm)) {
                         permissions = info.getUser().getUserPermissions();
@@ -41,6 +40,20 @@ public class SecurityServiceImpl implements SecurityService {
                 }
                 if (!permissions.contains(perm))
                         throw new PermissionDeniedException(perm);
+        }
+
+        @Override
+        public void requirePermission(UserIdentity identity, Permission perm) throws PermissionDeniedException {
+                IdentityInfo info = identitySessionService.getIdentityInfo(identity.getUid());
+                testPermission(info, perm);
+        }
+        
+        @Override
+        public void requirePermissionChange(UserIdentity identity, Set<Permission> perms) throws PermissionDeniedException {
+                IdentityInfo info = identitySessionService.getIdentityInfo(identity.getUid());
+                testPermission(info, UserPermission.ChangeUserPermissions.getPermission());
+                for (Permission perm: perms)
+                        testPermission(info, perm);
         }
         
         @Override
@@ -56,14 +69,17 @@ public class SecurityServiceImpl implements SecurityService {
         }
         
         @Override
-        public Set<Permission> getPermissions(UserIdentity identity) {
+        public Set<Permission> getPermissionsOf(UserIdentity identity) {
                 return userService.getIdentityInfo(identity).getPermissions();
         }
         
         @Override
-        public Set<Permission> getPermissions(Integer wid, Integer uid) {
+        public Set<Permission> getPermissionsOf(UserIdentity identity, Integer uid) throws ResourceMissingException {
+                Workspace workspace = userService.getIdentityInfo(identity).getWorkspace();
+                if (workspace == null)
+                        throw new ResourceMissingException("Current login doesn't have a valid workspace.");
                 Set<Permission> perms = userService.getUserPermissions(uid);
-                perms.addAll(workspaceService.getUserWorkspacePermission(wid, uid));
+                perms.addAll(workspaceService.getUserWorkspacePermission(workspace.getWid(), uid));
                 return perms;
         }
 }

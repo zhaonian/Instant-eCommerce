@@ -108,7 +108,7 @@ public class WorkspaceController {
                                                                                                PermissionDeniedException,
                                                                                                DuplicatedWorkspaceException {
                 request.validate();
-                securityService.requirePermission(request.getUserIdentity(), UserPermission.ChangeUserPermissions.getPermission());
+                securityService.requirePermissionChange(request.getUserIdentity(), request.getPermissions());
                 if (workspaceService.changeUserWorkspacePermission(workspaceId, userId, request.getPermissions()))
                         return new Response(Status.Success);
                 else

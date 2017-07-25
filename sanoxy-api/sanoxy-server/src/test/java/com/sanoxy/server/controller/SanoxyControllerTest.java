@@ -109,7 +109,7 @@ public class SanoxyControllerTest extends ControllerTest {
         
         @Test
         public void validateConnectionTest() throws Exception {
-                mockMvc.perform(get("/api/test_connection"))
+                mockMvc.perform(get("/api/server_info"))
                         .andExpect(status().isOk());
         }
 }

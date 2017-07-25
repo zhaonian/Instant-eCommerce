@@ -4,6 +4,7 @@ package com.sanoxy.controller;
 import com.sanoxy.controller.request.ValidatedIdentifiedRequest;
 import com.sanoxy.service.SecurityService;
 import com.sanoxy.service.exception.InvalidRequestException;
+import com.sanoxy.service.exception.ResourceMissingException;
 import com.sanoxy.service.util.Permission;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class SecurityController {
         @Autowired
         SecurityService securityService;
         
-        @RequestMapping(value = {"/get_all_permissons", ""}, method = RequestMethod.GET)
+        @RequestMapping(value = {"/view_all_permissions", ""}, method = RequestMethod.GET)
         @ResponseBody
         public Set<Permission> getAllPermissions() {
                 return securityService.getAllPermissions();
@@ -32,19 +33,17 @@ public class SecurityController {
         @ResponseBody
         public Set<Permission> viewCurrentPermission(@RequestBody ValidatedIdentifiedRequest request) throws InvalidRequestException {
                 request.validate();
-                return securityService.getPermissions(request.getUserIdentity());
+                return securityService.getPermissionsOf(request.getUserIdentity());
         }
         
-        @RequestMapping(value = {"/view_user_permissions/{workspaceId}/{userId}", ""}, method = RequestMethod.POST)
+        @RequestMapping(value = {"/view_user_permissions/{userId}", ""}, method = RequestMethod.POST)
         @ResponseBody
-        public Set<Permission> viewUserPermission(@PathVariable("workspaceId") Integer workspaceId,
-                                                        @PathVariable("userId") Integer userId,
-                                                        @RequestBody ValidatedIdentifiedRequest request) throws InvalidRequestException {
+        public Set<Permission> viewUserPermission(@PathVariable("userId") Integer userId,
+                                                  @RequestBody ValidatedIdentifiedRequest request) throws InvalidRequestException, 
+                                                                                                          ResourceMissingException {
                 request.validate();
-                if (workspaceId == null)
-                        throw new InvalidRequestException("workspaceId is missing");
                 if (userId == null)
                         throw new InvalidRequestException("userId is missing");
-                return securityService.getPermissions(workspaceId, userId);
+                return securityService.getPermissionsOf(request.getUserIdentity(), userId);
         }
 }

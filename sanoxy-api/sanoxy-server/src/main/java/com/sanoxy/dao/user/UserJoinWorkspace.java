@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanoxy.service.util.Permission;
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,7 +37,7 @@ public class UserJoinWorkspace implements Serializable {
         Integer uwid;
         User user;
         Workspace workspace;
-        private String permissionsJson;
+        private byte[] permissionsJson;
         ObjectMapper mapper = new ObjectMapper();
 
         public UserJoinWorkspace() {
@@ -45,7 +46,7 @@ public class UserJoinWorkspace implements Serializable {
         public UserJoinWorkspace(User user, Workspace workspace, Set<Permission> permissions) throws JsonProcessingException {
                 this.user = user;
                 this.workspace = workspace;
-                this.permissionsJson = mapper.writeValueAsString(permissions);
+                this.permissionsJson = mapper.writeValueAsString(permissions).getBytes(StandardCharsets.US_ASCII);
         }
         
         @Id
@@ -84,11 +85,11 @@ public class UserJoinWorkspace implements Serializable {
         @NotNull
         @NotEmpty
         @Lob
-        public String getPermissionsJson() {
+        public byte[] getPermissionsJson() {
                 return this.permissionsJson;
         }
         
-        public void setPermissionsJson(String permissionsJson) {
+        public void setPermissionsJson(byte[] permissionsJson) {
                 this.permissionsJson = permissionsJson;
         }
         

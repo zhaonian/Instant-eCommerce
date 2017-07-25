@@ -1,7 +1,9 @@
 
 package com.sanoxy.controller;
 
+import com.sanoxy.configuration.Constants;
 import com.sanoxy.controller.response.Response;
+import com.sanoxy.controller.response.ServerInfoResponse;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,9 +15,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(value = "api", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class SanoxyController {
         
-        @RequestMapping(value = {"/test_connection", ""}, method = RequestMethod.GET)
+        @RequestMapping(value = {"/server_info", ""}, method = RequestMethod.GET)
         @ResponseBody
-        public Response testConnection() {
-                return new Response(Response.Status.Success);
+        public ServerInfoResponse testConnection() {
+                return new ServerInfoResponse(Response.Status.Success, Constants.SERVER_VERSION);
         }
 }

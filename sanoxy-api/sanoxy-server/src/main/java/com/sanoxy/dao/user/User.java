@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanoxy.service.util.Permission;
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -20,7 +21,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -35,7 +35,7 @@ public class User implements Serializable {
 	private Integer uid;
 	private String name;
         private String encryptedPasscode;
-        private String userPermissionsJson;
+        private byte[] userPermissionsJson;
         Collection<UserJoinWorkspace> userJoinWorkspaces;
         
         ObjectMapper mapper = new ObjectMapper();
@@ -50,7 +50,7 @@ public class User implements Serializable {
         public User(String name, String encryptedPasscode, Set<Permission> userPermissions) throws JsonProcessingException {
                 this.name = name;
                 this.encryptedPasscode = encryptedPasscode;
-                this.userPermissionsJson = mapper.writeValueAsString(userPermissions);
+                this.userPermissionsJson = mapper.writeValueAsString(userPermissions).getBytes(StandardCharsets.US_ASCII);
         }
 	
         @Id
@@ -88,12 +88,11 @@ public class User implements Serializable {
         
         @NotNull
         @NotEmpty
-        @Lob
-        public String getUserPermissionsJson() {
+        public byte[] getUserPermissionsJson() {
                 return this.userPermissionsJson;
         }
         
-        public void setUserPermissionsJson(String userPermissionsJson) {
+        public void setUserPermissionsJson(byte[] userPermissionsJson) {
                 this.userPermissionsJson = userPermissionsJson;
         }
         

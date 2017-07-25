@@ -75,8 +75,6 @@ public class UserServiceImpl implements UserService {
                 if (!encoder.matches(passcode, user.getEncryptedPasscode())) 
                         throw new AuthenticationException("Password does not match");
                 
-               
-                
                 UserIdentity identity;
                 if (workspaceName.equals("imaginarydb")) {
                         identity = new UserIdentity();
