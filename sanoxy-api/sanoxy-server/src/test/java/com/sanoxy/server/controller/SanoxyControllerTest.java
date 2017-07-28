@@ -7,6 +7,7 @@ import com.sanoxy.controller.request.ValidatedIdentifiedRequest;
 import com.sanoxy.controller.request.user.CreateUserRequest;
 import com.sanoxy.controller.request.user.LogInRequest;
 import com.sanoxy.controller.request.user.LogoutRequest;
+import com.sanoxy.dao.inventory.Inventory;
 import com.sanoxy.dao.user.User;
 import com.sanoxy.dao.user.Workspace;
 import com.sanoxy.repository.user.UserRepository;
@@ -52,6 +53,13 @@ public class SanoxyControllerTest extends ControllerTest {
                 ObjectMapper mapper = new ObjectMapper();
                 IdentityInfo iid = mapper.readValue(content, IdentityInfo.class);
                 return iid;
+        }
+        
+        protected Inventory responseToInventory(MvcResult result) throws Exception {
+                String content = result.getResponse().getContentAsString();
+                ObjectMapper mapper = new ObjectMapper();
+                Inventory inventory = mapper.readValue(content, Inventory.class);
+                return inventory;
         }
         
         protected void requestNewUser() throws Exception {

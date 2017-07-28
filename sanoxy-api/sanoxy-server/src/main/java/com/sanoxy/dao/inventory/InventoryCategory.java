@@ -1,10 +1,7 @@
 package com.sanoxy.dao.inventory;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sanoxy.dao.user.Workspace;
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,7 +10,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -29,7 +25,6 @@ public class InventoryCategory implements Serializable {
         private Workspace workspace;
 	private String categoryName;
         private Integer numInventories;
-	private Collection<Inventory> inventories;
 
         public InventoryCategory() {
         }
@@ -89,15 +84,15 @@ public class InventoryCategory implements Serializable {
 	public void setCategoryName(String categoryName) {
 		this.categoryName = categoryName;
 	}
-
+/*
 	@JsonIgnore
 /*        @OneToMany(mappedBy = "inventoryCategory", cascade = CascadeType.ALL)*/
-        @Transient
+/*        @Transient
 	public Collection<Inventory> getInventories() {
 		return inventories;
 	}
 
 	public void setInventories(List<Inventory> inventories) {
 		this.inventories = inventories;
-	}
+	}*/
 }

@@ -9,6 +9,7 @@ import com.sanoxy.controller.response.Response;
 import com.sanoxy.controller.response.Response.Status;
 import com.sanoxy.dao.inventory.Inventory;
 import com.sanoxy.dao.inventory.InventoryCategory;
+import com.sanoxy.dao.inventory.InventoryImage;
 import com.sanoxy.service.InventoryService;
 import com.sanoxy.service.SecurityService;
 import com.sanoxy.service.exception.InvalidRequestException;
@@ -129,7 +130,7 @@ public class InventoryController {
                                                   request.getAmazonProductType(), 
                                                   request.getBullets(), 
                                                   request.getKeyword(), 
-                                                  request.getImageUrls());             
+                                                  request.getImageFiles());             
         }
         
         @RequestMapping(value = {"/inventory/delete/{inventoryId}", ""}, method = RequestMethod.POST)
@@ -162,5 +163,19 @@ public class InventoryController {
                 if (keyword == null || keyword.isEmpty())
                         throw new InvalidRequestException("Keyword can't be empty.");
                 return inventoryService.searchWorkspaceInventories(request.getUserIdentity(), keyword);
+        }
+        
+        @RequestMapping(value = {"/inventory/get/image/{inventoryId}", ""}, method = RequestMethod.GET)
+        @ResponseBody
+        public Collection<InventoryImage> getInventoryImages(@PathVariable("inventoryId") Integer inventoryId,
+                                                             @RequestBody ValidatedIdentifiedRequest request) throws InvalidRequestException, 
+                                                                                                              ResourceMissingException, 
+                                                                                                              PermissionDeniedException {
+                request.validate();
+                securityService.requirePermission(request.getUserIdentity(), WorkspacePermission.ReadInventory.getPermission());
+                
+                if (inventoryId == null)
+                        throw new InvalidRequestException("inventory id can't be empty.");
+                return inventoryService.getInventoryImages(request.getUserIdentity(), inventoryId);
         }
 }

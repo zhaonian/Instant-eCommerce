@@ -10,4 +10,5 @@ public interface InventoryCategoryRepository extends CrudRepository<InventoryCat
         public Collection<InventoryCategory> findByWorkspaceWidAndCategoryName(Integer wid, String categoryName);
 	public InventoryCategory findByCid(Integer cid);
         public Long deleteByCid(Integer cid);
+        public boolean existsByWorkspaceWidAndCid(Integer wid, Integer cid);
 }

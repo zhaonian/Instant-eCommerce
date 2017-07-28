@@ -5,11 +5,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanoxy.dao.inventory.Inventory;
 import com.sanoxy.dao.inventory.InventoryCategory;
+import com.sanoxy.dao.inventory.InventoryImage;
 import com.sanoxy.dao.user.Workspace;
 import com.sanoxy.repository.inventory.InventoryCategoryRepository;
 import com.sanoxy.repository.inventory.InventoryRepository;
 import com.sanoxy.service.exception.ResourceMissingException;
 import com.sanoxy.service.util.UserIdentity;
+import java.util.ArrayList;
 import java.util.Collection;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -40,6 +42,18 @@ public class InventoryServiceImpl implements InventoryService {
                         throw new ResourceMissingException("Workspace for the current login status does not exist.");
                 return workspace;
         }
+        
+        private void checkInventoryCategoryOwnership(UserIdentity identity, Integer cid) throws ResourceMissingException {
+                Workspace workspace = getLoggedInWorkspace(identity);
+                if (!inventoryCategoryRepository.existsByWorkspaceWidAndCid(workspace.getWid(), cid))
+                        throw new ResourceMissingException("You don't own the inventory category with cid <" + cid + ">");
+        }
+        
+        private void checkInventoryOwnership(UserIdentity identity, Integer iid) throws ResourceMissingException {
+                Workspace workspace = getLoggedInWorkspace(identity);
+                if (!inventoryRepository.existsByInventoryCategoryWorkspaceWidAndIid(workspace.getWid(), iid))
+                        throw new ResourceMissingException("You don't own the inventory with iid <" + iid + ">");
+        }
 
         @Override
         public Collection<InventoryCategory> getInventoryCategories(UserIdentity identity) throws ResourceMissingException {
@@ -54,13 +68,27 @@ public class InventoryServiceImpl implements InventoryService {
         }
         
         @Override
-        public boolean deleteInventoryCategory(UserIdentity identity, Integer cid) {
+        public boolean deleteInventoryCategory(UserIdentity identity, Integer cid) throws ResourceMissingException {
+                checkInventoryCategoryOwnership(identity, cid);
                 return 1 == inventoryCategoryRepository.deleteByCid(cid);
         }
         
         @Override
-        public Collection<Inventory> getInventories(UserIdentity identity, Integer cid, Integer startIndex, Integer endIndex) {
-                return inventoryRepository.findByCidWithPagination(cid, startIndex, endIndex - startIndex + 1);
+        public Collection<Inventory> getInventories(UserIdentity identity, Integer cid, Integer startIndex, Integer endIndex) 
+                                                                                                    throws ResourceMissingException {
+                checkInventoryCategoryOwnership(identity, cid);
+                Collection<Inventory> inventories = inventoryRepository.findByCidWithPagination(cid, startIndex, endIndex - startIndex + 1);
+                inventories.forEach(inventory -> inventory.setInventoryImages(null));
+                return inventories;
+        }
+        
+        @Override
+        public Collection<InventoryImage> getInventoryImages(UserIdentity identity, Integer iid) throws ResourceMissingException {
+                Inventory inventory = inventoryRepository.findByIid(iid);
+                if (inventory == null)
+                        throw new ResourceMissingException("Inventory with iid <" + iid + "> doesn't exist.");
+                checkInventoryOwnership(identity, iid);
+                return inventory.getInventoryImages();
         }
 
         @Transactional
@@ -75,11 +103,21 @@ public class InventoryServiceImpl implements InventoryService {
                                       String amazonProductType,
                                       Collection<String> bullets,
                                       String keyword,
-                                      Collection<String> imageUrls) throws ResourceMissingException, JsonProcessingException {
+                                      Collection<byte[]> imageFiles) throws ResourceMissingException, 
+                                                                            JsonProcessingException {
                 InventoryCategory category = entityManager.getReference(InventoryCategory.class, cid);
                 if (category == null)
                         throw new ResourceMissingException("Category " + cid + " does not exist.");
+                
+                checkInventoryCategoryOwnership(identity, cid);
+                
                 category.incNumInventories();
+                
+                Collection<InventoryImage> images = new ArrayList();
+                imageFiles.forEach((file) -> {
+                        images.add(new InventoryImage("", file));
+                });
+                
                 return inventoryRepository.save(new Inventory(category, 
                                                        suggestPrice, 
                                                        ean, 
@@ -89,7 +127,7 @@ public class InventoryServiceImpl implements InventoryService {
                                                        amazonItemType, amazonProductType, 
                                                        mapper.writeValueAsString(bullets), 
                                                        keyword, 
-                                                       mapper.writeValueAsString(imageUrls)));
+                                                       images));
         }
 
         @Transactional
@@ -98,6 +136,9 @@ public class InventoryServiceImpl implements InventoryService {
                 Inventory inventory = inventoryRepository.findByIid(iid);
                 if (inventory == null)
                         throw new ResourceMissingException("Inventory with iid <" + iid + "> does not exist.");
+                
+                checkInventoryOwnership(identity, iid);
+                
                 inventoryRepository.deleteByIid(iid);
                 
                 InventoryCategory category = inventory.getInventoryCategory();

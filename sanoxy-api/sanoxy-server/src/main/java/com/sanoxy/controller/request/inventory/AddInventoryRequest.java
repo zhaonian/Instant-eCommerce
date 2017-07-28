@@ -5,6 +5,7 @@ import com.sanoxy.controller.request.ValidatedIdentifiedRequest;
 import com.sanoxy.service.exception.InvalidRequestException;
 import com.sanoxy.service.util.UserIdentity;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -19,7 +20,7 @@ public class AddInventoryRequest extends ValidatedIdentifiedRequest {
 	private String amazonProductType;
 	private List<String> bullets = new ArrayList();
 	private String keyword;
-	private List<String> imageUrls = new ArrayList();
+	private Collection<byte[]> imageFiles = new ArrayList();
         
         public AddInventoryRequest() {
         }
@@ -34,7 +35,7 @@ public class AddInventoryRequest extends ValidatedIdentifiedRequest {
                                    String amazonProductType,
                                    List<String> bullets,
                                    String keyword,
-                                   List<String> imageUrls) {
+                                   Collection<byte[]> imageFiles) {
                 super(identity);
                 this.suggestPrice = suggestPrice;
                 this.ean = ean;              
@@ -45,7 +46,7 @@ public class AddInventoryRequest extends ValidatedIdentifiedRequest {
                 this.amazonProductType = amazonProductType;
                 this.bullets = bullets;
                 this.keyword = keyword;
-                this.imageUrls = imageUrls;
+                this.imageFiles = imageFiles;
         }
 
 	@Override
@@ -53,6 +54,7 @@ public class AddInventoryRequest extends ValidatedIdentifiedRequest {
                 super.validate();
 		if (title == null || title.isEmpty()) { throw new InvalidRequestException("title is missing"); }
 		if (brand == null || brand.isEmpty()) { throw new InvalidRequestException("brand is missing"); }
+                if (imageFiles.isEmpty()) throw new InvalidRequestException("require at least one image file.");
 	}
 
 	public Float getSuggestPrice() {
@@ -127,11 +129,11 @@ public class AddInventoryRequest extends ValidatedIdentifiedRequest {
 		this.keyword = keyword;
 	}
 
-	public List<String> getImageUrls() {
-		return imageUrls;
+	public Collection<byte[]> getImageFiles() {
+		return imageFiles;
 	}
 
-	public void setImageUrls(List<String> imageUrls) {
-		this.imageUrls = imageUrls;
+	public void setImageFiles(Collection<byte[]> imageFiles) {
+		this.imageFiles = imageFiles;
 	}
 }

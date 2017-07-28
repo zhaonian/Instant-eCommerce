@@ -6,12 +6,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sanoxy.controller.request.ValidatedIdentifiedRequest;
 import com.sanoxy.controller.request.inventory.AddCategoryRequest;
 import com.sanoxy.controller.request.inventory.AddInventoryRequest;
+import com.sanoxy.dao.inventory.Inventory;
 import com.sanoxy.dao.inventory.InventoryCategory;
 import com.sanoxy.dao.user.Workspace;
 import com.sanoxy.repository.inventory.InventoryCategoryRepository;
 import com.sanoxy.repository.inventory.InventoryRepository;
 import com.sanoxy.service.util.IdentityInfo;
 import com.sanoxy.service.util.UserIdentity;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -49,7 +53,7 @@ public class InventoryControllerTest extends SanoxyControllerTest {
                 return requests;
         }
         
-        private AddInventoryRequest[] genAddInventoryRequests(UserIdentity identity, int n, Collection<InventoryCategory> categories) {
+        private AddInventoryRequest[] genAddInventoryRequests(UserIdentity identity, int n, Collection<InventoryCategory> categories) throws IOException {
                 String[] titles = {"Testing titles", 
                                    "Titles Can Be (And Should Be) Extremely Long", 
                                    "Every Title Is Allowed 250 Characters",
@@ -58,6 +62,8 @@ public class InventoryControllerTest extends SanoxyControllerTest {
                 
                 AddInventoryRequest[] requests = new AddInventoryRequest[n*categories.size()];
                 Random rng = new Random(10);
+                byte[] img = Files.readAllBytes(Paths.get("res/horse2.jpg"));
+                byte[] img2 = Files.readAllBytes(Paths.get("res/zebra.jpg"));
                 int i = 0;
                 for (InventoryCategory category : categories) {
                         for (int j = 0; j < n; i++, j ++) {
@@ -71,7 +77,7 @@ public class InventoryControllerTest extends SanoxyControllerTest {
                                         "Tablets",
                                         new ArrayList() {{ this.add("Good quality"); this.add("Lowest price"); }},
                                         "Random item",
-                                        new ArrayList() {{ this.add("http://xj39.com"); this.add("http://2x9dj.com"); }});
+                                        new ArrayList<byte[]>() {{ this.add(img); this.add(img2); }});
                         }
                 }
                 return requests;
@@ -124,8 +130,17 @@ public class InventoryControllerTest extends SanoxyControllerTest {
                 AddInventoryRequest[] requests = genAddInventoryRequests(identity, m, cs);
                 for (int i = 0; i < requests.length; i ++) {
                         InventoryCategory category = cs.get(i/m);
-                        mockMvc.perform(post("/api/access/inventory/add/" + category.getCid())
+                        MvcResult result = mockMvc.perform(post("/api/access/inventory/add/" + category.getCid())
                                 .content(json(requests[i]))
+                                .contentType(MEDIA_TYPE))
+                                .andExpect(status().isOk())
+                                .andReturn();
+                        
+                        Inventory inventory = responseToInventory(result);
+                        assertTrue(requests[i].getTitle().equals(inventory.getTitle()));
+                        
+                        mockMvc.perform(get("/api/access/inventory/get/image/" + inventory.getIid())
+                                .content(json(new ValidatedIdentifiedRequest(identity)))
                                 .contentType(MEDIA_TYPE))
                                 .andExpect(status().isOk());
                 }
@@ -156,7 +171,7 @@ public class InventoryControllerTest extends SanoxyControllerTest {
         @Rollback
         public void addInventoryTest() throws Exception {
                 final int n = 10;
-                final int m = 100;
+                final int m = 5;
                 
                 requestNewUser();
                 UserIdentity iid = requestNewUserLogin();

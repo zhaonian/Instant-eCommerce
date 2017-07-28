@@ -4,6 +4,7 @@ package com.sanoxy.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sanoxy.dao.inventory.Inventory;
 import com.sanoxy.dao.inventory.InventoryCategory;
+import com.sanoxy.dao.inventory.InventoryImage;
 import com.sanoxy.service.exception.ResourceMissingException;
 import com.sanoxy.service.util.UserIdentity;
 import java.util.Collection;
@@ -25,7 +26,8 @@ public interface InventoryService {
                                       String amazonProductType,
                                       Collection<String> bullets,
                                       String keyword,
-                                      Collection<String> imageUrls) throws ResourceMissingException, JsonProcessingException;
+                                      Collection<byte[]> imageFiles) throws ResourceMissingException, JsonProcessingException;
         public boolean deleteInventory(UserIdentity identity, Integer iid) throws ResourceMissingException;
         public Collection<Inventory> searchWorkspaceInventories(UserIdentity identity, String keyword) throws ResourceMissingException;
+        public Collection<InventoryImage> getInventoryImages(UserIdentity identity, Integer iid) throws ResourceMissingException;
 }

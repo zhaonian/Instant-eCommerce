@@ -11,13 +11,14 @@ import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -84,7 +85,7 @@ public class UserJoinWorkspace implements Serializable {
         
         @NotNull
         @NotEmpty
-        @Lob
+        @Basic(fetch=FetchType.LAZY)
         public byte[] getPermissionsJson() {
                 return this.permissionsJson;
         }
@@ -101,7 +102,7 @@ public class UserJoinWorkspace implements Serializable {
         @Transient
         public Set<Permission> getPermissions() {
                 try {
-                        return mapper.readValue(this.permissionsJson, new TypeReference<Set<Permission>>() {});
+                        return mapper.readValue(this.getPermissionsJson(), new TypeReference<Set<Permission>>() {});
                 } catch (IOException ex) {
                         Logger.getLogger(UserJoinWorkspace.class.getName()).log(Level.SEVERE, null, ex);
                 }

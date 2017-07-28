@@ -1,13 +1,21 @@
 package com.sanoxy.dao.inventory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
@@ -30,9 +38,9 @@ public class Inventory implements Serializable {
 	private String description;
 	private String amazonItemType;
 	private String amazonProductType;
-	private String bulletsJson;
+	private byte[] bulletsJson;
 	private String keyword;
-	private String imageUrlsJson;
+	private Collection<InventoryImage> inventoryImages;
 
 	
 //	@OneToMany(mappedBy="inventory_id", cascade = CascadeType.ALL)
@@ -51,7 +59,7 @@ public class Inventory implements Serializable {
                          String amazonProductType,
                          String bulletsJson,
                          String keyword,
-                         String imageUrlsJson) {
+                         Collection<InventoryImage> images) {
                 this.inventoryCategory = inventoryCategory;
                 this.suggestPrice = suggestPrice;
                 this.ean = ean;
@@ -60,9 +68,9 @@ public class Inventory implements Serializable {
                 this.description = description;
                 this.amazonItemType = amazonItemType;
                 this.amazonProductType = amazonProductType;
-                this.bulletsJson = bulletsJson;
+                this.bulletsJson = bulletsJson.getBytes(StandardCharsets.US_ASCII);
                 this.keyword = keyword;
-                this.imageUrlsJson = imageUrlsJson;
+                this.inventoryImages = images;
         }
         
         @Id
@@ -72,8 +80,8 @@ public class Inventory implements Serializable {
 		return iid;
 	}
 
-	public void setIid(Integer id) {
-		this.iid = id;
+	public void setIid(Integer iid) {
+		this.iid = iid;
 	}
 
         @ManyToOne(targetEntity=InventoryCategory.class)
@@ -123,7 +131,7 @@ public class Inventory implements Serializable {
         @NotNull
         @NotEmpty
         @Lob
-        @Column(columnDefinition = "TEXT")
+        @Basic(fetch=FetchType.LAZY)
 	public String getDescription() {
 		return description;
 	}
@@ -159,13 +167,13 @@ public class Inventory implements Serializable {
 		this.amazonProductType = amazonProductType;
 	}
 
-        @Lob
         @NotEmpty
-	public String getBulletsJson() {
+        @Basic(fetch=FetchType.LAZY)
+	public byte[] getBulletsJson() {
                 return this.bulletsJson;
         }
         
-        public void setBulletsJson(String bulletsJson) {
+        public void setBulletsJson(byte[] bulletsJson) {
                 this.bulletsJson = bulletsJson;
         }
 
@@ -183,11 +191,16 @@ public class Inventory implements Serializable {
         @Lob
         @NotNull
         @NotEmpty
-	public String getImageUrlsJson() {
-                return this.imageUrlsJson;
+        @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+        @JoinTable(name = "inventory_join_image", 
+                   /*joinColumns = @JoinColumn(name = "iid", referencedColumnName = "fiid"), */
+                   inverseJoinColumns = @JoinColumn(name = "imid", referencedColumnName = "imid"))
+        @JsonIgnore
+	public Collection<InventoryImage> getInventoryImages() {
+                return this.inventoryImages;
         }
         
-        public void setImageUrlsJson(String imageUrlsJson) {
-                this.imageUrlsJson = imageUrlsJson;
+        public void setInventoryImages(Collection<InventoryImage> inventoryImages) {
+                this.inventoryImages = inventoryImages;
         }
 }

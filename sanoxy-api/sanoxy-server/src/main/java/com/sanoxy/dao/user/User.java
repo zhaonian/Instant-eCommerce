@@ -15,9 +15,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -88,6 +90,7 @@ public class User implements Serializable {
         
         @NotNull
         @NotEmpty
+        @Basic(fetch=FetchType.LAZY)
         public byte[] getUserPermissionsJson() {
                 return this.userPermissionsJson;
         }
@@ -128,7 +131,7 @@ public class User implements Serializable {
         @Transient
         public Set<Permission> getUserPermissions() {
                 try {
-                        return mapper.readValue(userPermissionsJson, new TypeReference<Set<Permission>>() {});
+                        return mapper.readValue(this.getUserPermissionsJson(), new TypeReference<Set<Permission>>() {});
                 } catch (IOException ex) {
                         Logger.getLogger(User.class.getName()).log(Level.SEVERE, null, ex);
                 }
