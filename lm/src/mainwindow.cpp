@@ -5,7 +5,7 @@
 
 
 static void
-update_category(QTreeWidgetItem* container, core::localdb localdb)
+update_category(QTreeWidgetItem* container, core::inventorydb localdb)
 {
         std::string error;
         std::vector<core::inventory_category> const& category = localdb.get_inventory_categories(error);
@@ -18,7 +18,7 @@ update_category(QTreeWidgetItem* container, core::localdb localdb)
 }
 
 static void
-update_inventory_container(QTreeWidget* browser, QTreeWidgetItem** container, core::localdb& localdb)
+update_inventory_container(QTreeWidget* browser, QTreeWidgetItem** container, core::inventorydb& localdb)
 {
         delete *container;
         *container = new QTreeWidgetItem(browser);
@@ -46,7 +46,7 @@ void
 MainWindow::make_connection(core::identity const& identity)
 {
         delete m_localdb;
-        m_localdb = new core::localdb(*core::get_central_server(), identity);
+        m_localdb = new core::inventorydb(*core::get_central_server(), identity);
 
         update_inventory_container(m_ui->inventory_browser, &m_inventory_container, *m_localdb);
 

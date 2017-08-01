@@ -10,10 +10,10 @@
 namespace core
 {
 
-class localdb
+class inventorydb
 {
 public:
-        localdb(central_server& server, identity const& id);
+        inventorydb(central_server& server, identity const& id);
         std::string                             connection_name() const;
         std::string                             user_name() const;
 
