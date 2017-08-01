@@ -24,17 +24,37 @@ public:
         bool                    connect(std::string const& host_name, unsigned port, std::string& error);
         bool                    is_connected() const;
         std::string const&      server_version() const;
-        bool                    send_json_request(util::json_t& data,
-                                                  std::string const& path, request_type type, util::json_t const& json,
+        bool                    send_json_request(util::jserializable& s,
+                                                  std::string const& path, request_type type,
+                                                  util::json_t const& request,
                                                   std::string& error);
+        bool                    send_json_request(util::jserializable& s,
+                                                  std::string const& path, request_type type,
+                                                  util::jserializable const& request,
+                                                  std::string& error);
+        bool                    send_json_request(std::string const& path, request_type type,
+                                                  util::json_t const& request, std::string& error);
+        bool                    send_json_request(std::string const& path, request_type type,
+                                                  util::jserializable const& request, std::string& error);
+        bool                    send_json_request(std::string const& path, request_type type,
+                                                  util::json_t const& request);
+        bool                    send_json_request(std::string const& path, request_type type,
+                                                  util::jserializable const& request);
 private:
-        struct server_info
+        struct server_info: public util::jserializable
         {
                 std::string version_string;
 
-                void import_json(util::json_t const& json)
+                void import_json(util::json_t const& json) override
                 {
                         version_string = json.get<std::string>("versionString");
+                }
+
+                util::json_t export_json() const override
+                {
+                        util::json_t json;
+                        json.put<std::string>("versionString", version_string);
+                        return json;
                 }
         };
 

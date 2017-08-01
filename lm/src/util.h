@@ -33,6 +33,42 @@ as_vector(json_t const& pt, json_t::key_type const& key)
         return r;
 }
 
+class jserializable
+{
+public:
+        jserializable()
+        {
+        }
+
+        virtual ~jserializable()
+        {
+        }
+
+        virtual void    import_json(json_t const& json) = 0;
+        virtual json_t  export_json() const = 0;
+};
+
+class empty_jserializable: public jserializable
+{
+public:
+        empty_jserializable()
+        {
+        }
+
+        ~empty_jserializable()
+        {
+        }
+
+        void import_json(json_t const&)
+        {
+        }
+
+        json_t export_json() const
+        {
+                return json_t();
+        }
+};
+
 }
 
 #endif // UTIL_H

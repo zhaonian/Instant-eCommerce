@@ -163,16 +163,9 @@ core::central_server::connect(std::string const& host_name, unsigned port, std::
         m_host_name = host_name;
         m_port = port;
 
-        util::json_t info;
-        send_json_request(info, "/api/server_info", request_type::get, util::json_t(), error);
+        send_json_request(m_server_info, "/api/server_info", request_type::get, util::json_t(), error);
         if (error.empty()) {
-                try {
-                        m_server_info.import_json(info);
-                        m_is_connected = info.get<std::string>("status") == "1";
-                } catch (...) {
-                        error = "Invalid response";
-                        m_is_connected = false;
-                }
+                m_is_connected = true;
         } else {
                 m_is_connected = false;
         }
@@ -193,19 +186,63 @@ core::central_server::server_version() const
 }
 
 bool
-core::central_server::send_json_request(util::json_t& data, std::string const& path, request_type type, util::json_t const& json, std::string& error)
+core::central_server::send_json_request(util::jserializable& s, std::string const& path, request_type type,
+                                        util::json_t const& request, std::string& error)
 {
-        std::string response = ::send_json_request(m_host_name, m_port, path, type == request_type::get ? "GET" : "POST", json);
+        std::string response = ::send_json_request(m_host_name, m_port, path, type == request_type::get ? "GET" : "POST", request);
+        util::json_t data;
         if (parse_json_response(data, response, error)) {
                 try {
                         error = data.get<std::string>("message");
                         return false;
                 } catch (...) {
                         error.clear();
+                        s.import_json(data);
                         return true;
                 }
         } else
                 return false;
+}
+
+bool
+core::central_server::send_json_request(util::jserializable& s, std::string const& path, request_type type,
+                                        util::jserializable const& request, std::string& error)
+{
+        return send_json_request(s, path, type, request.export_json(), error);
+}
+
+bool
+core::central_server::send_json_request(std::string const& path, request_type type,
+                                        util::jserializable const& request, std::string& error)
+{
+        util::empty_jserializable s;
+        return send_json_request(s, path, type, request.export_json(), error);
+}
+
+bool
+core::central_server::send_json_request(std::string const& path, request_type type,
+                                        util::json_t const& request, std::string& error)
+{
+        util::empty_jserializable s;
+        return send_json_request(s, path, type, request, error);
+}
+
+bool
+core::central_server::send_json_request(std::string const& path, request_type type,
+                                        util::json_t const& request)
+{
+        std::string error;
+        util::empty_jserializable s;
+        return send_json_request(s, path, type, request, error);
+}
+
+bool
+core::central_server::send_json_request(std::string const& path, request_type type,
+                                        util::jserializable const& request)
+{
+        std::string error;
+        util::empty_jserializable s;
+        return send_json_request(s, path, type, request.export_json(), error);
 }
 
 core::central_server    g_server;
