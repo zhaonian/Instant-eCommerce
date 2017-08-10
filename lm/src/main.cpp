@@ -1,3 +1,5 @@
+#include "test/test.h"
+#include "test/testrunner.h"
 #include "mainwindow.h"
 #include "loginwindow.h"
 #include <QApplication>
@@ -14,8 +16,12 @@ startup(QApplication const& app)
         return app.exec();
 }
 
-int main(int argc, char *argv[])
+int
+main(int argc, char *argv[])
 {
+        test::test_runner runner = test::load(argc, argv);
+        runner.run_all();
+
         QApplication app(argc, argv);
         return startup(app);
 }

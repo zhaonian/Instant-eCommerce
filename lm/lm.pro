@@ -26,7 +26,12 @@ SOURCES += src/main.cpp\
     src/inventorytracking.cpp \
     src/inventoryinfo.cpp \
     src/workspace.cpp \
-    src/inventorydb.cpp
+    src/inventorydb.cpp \
+    test/test.cpp \
+    test/testrunner.cpp \
+    test/testauth.cpp \
+    test/testworkspace.cpp \
+    test/testinventory.cpp
 
 HEADERS  += src/mainwindow.h \
     src/loginwindow.h \
@@ -42,7 +47,12 @@ HEADERS  += src/mainwindow.h \
     src/inventorytracking.h \
     src/inventoryinfo.h \
     src/workspace.h \
-    src/inventorydb.h
+    src/inventorydb.h \
+    test/test.h \
+    test/testrunner.h \
+    test/testauth.h \
+    test/testworkspace.h \
+    test/testinventory.h
 
 LIBS += -lboost_system
 LIBS += -lcurl
